@@ -1,0 +1,27 @@
+.sidebar{
+width:220px;
+height:100vh;
+background:white;
+padding:20px;
+box-shadow:2px 0 10px rgba(0,0,0,0.05);
+}
+
+.logo{
+color:#A78BFA;
+margin-bottom:30px;
+}
+
+.menu{
+list-style:none;
+padding:0;
+}
+
+.menu li{
+margin:15px 0;
+font-size:16px;
+cursor:pointer;
+}
+
+.menu li:hover{
+color:#A78BFA;
+}
