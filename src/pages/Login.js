@@ -38,7 +38,7 @@ function Login() {
 
             <input
               type="email"
-              placeholder="Enter email HERE"
+              placeholder="Enter your email HERE"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               style={styles.input}
