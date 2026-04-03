@@ -5,6 +5,7 @@ function Login(){
 
   const [email,setEmail] = useState("")
   const [password,setPassword] = useState("")
+  const [role,setRole] = useState("user")
 
   const handleLogin = async (e) => {
 
@@ -14,12 +15,17 @@ function Login(){
 
       const res = await API.post("login.php",{
         email,
-        password
+        password,
+        role
       })
 
       localStorage.setItem("token",res.data.token)
 
-      window.location="/events"
+      if(role === "admin"){
+        window.location="/admin/dashboard"
+      }else{
+        window.location="/events"
+      }
 
     }catch{
 
@@ -33,19 +39,36 @@ function Login(){
 
     <div style={styles.page}>
 
-      {/* Gradient header */}
       <div style={styles.header}></div>
 
-      {/* Login card */}
       <div style={styles.card}>
 
-        <h2 style={styles.title}>Login</h2>
+        <h2 style={styles.title}>Login Now</h2>
+
+        {/* Role Selector */}
+        <div style={styles.roleSelector}>
+
+          <button
+            style={role==="user"?styles.activeRole:styles.roleBtn}
+            onClick={()=>setRole("user")}
+            type="button"
+          >
+            User
+          </button>
+
+          <button
+            style={role==="admin"?styles.activeRole:styles.roleBtn}
+            onClick={()=>setRole("admin")}
+            type="button"
+          >
+            Admin
+          </button>
+
+        </div>
 
         <form onSubmit={handleLogin}>
 
-          {/* Email */}
           <div style={styles.inputGroup}>
-
             <label>Email</label>
 
             <input
@@ -55,12 +78,9 @@ function Login(){
               onChange={(e)=>setEmail(e.target.value)}
               style={styles.input}
             />
-
           </div>
 
-          {/* Password */}
           <div style={styles.inputGroup}>
-
             <label>Password</label>
 
             <input
@@ -70,17 +90,21 @@ function Login(){
               onChange={(e)=>setPassword(e.target.value)}
               style={styles.input}
             />
-
           </div>
 
-          <button style={styles.button}>
+          <div style={styles.forgot}>
+            <a href="/forgot-password">Forgot Password?</a>
+          </div>
+
+          {/* ONE LOGIN BUTTON */}
+          <button style={styles.loginBtn}>
             Login
           </button>
 
         </form>
 
         <p style={styles.links}>
-          Don't have an account? <a href="/signup">Signup</a>
+          New here? <a href="/signup">Create an Account</a>
         </p>
 
       </div>
@@ -116,7 +140,7 @@ const styles = {
     background:"#fff",
     padding:"40px",
     borderRadius:"12px",
-    width:"320px",
+    width:"350px",
     boxShadow:"0 5px 20px rgba(0,0,0,0.1)",
     position:"relative",
     zIndex:2
@@ -125,6 +149,30 @@ const styles = {
   title:{
     textAlign:"center",
     marginBottom:"20px"
+  },
+
+  roleSelector:{
+    display:"flex",
+    justifyContent:"center",
+    marginBottom:"20px",
+    gap:"10px"
+  },
+
+  roleBtn:{
+    padding:"8px 20px",
+    border:"1px solid #A5B4FC",
+    background:"#fff",
+    borderRadius:"20px",
+    cursor:"pointer"
+  },
+
+  activeRole:{
+    padding:"8px 20px",
+    border:"none",
+    background:"#7C6CF5",
+    color:"#fff",
+    borderRadius:"20px",
+    cursor:"pointer"
   },
 
   inputGroup:{
@@ -139,9 +187,15 @@ const styles = {
     outline:"none"
   },
 
-  button:{
+  forgot:{
+    textAlign:"right",
+    marginBottom:"15px",
+    fontSize:"14px"
+  },
+
+  loginBtn:{
     width:"100%",
-    background:"#A5B4FC",
+    background:"#7C6CF5",
     border:"none",
     padding:"10px",
     borderRadius:"8px",

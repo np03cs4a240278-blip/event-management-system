@@ -1,35 +1,31 @@
-import { Link } from "react-router-dom"
+import Sidebar from "../../components/Sidebar"
+import Navbar from "../../components/Navbar"
 
 function AdminDashboard(){
 
-return(
+  return(
 
-<div style={{padding:"30px"}}>
+    <div style={{display:"flex"}}>
 
-<h2>Admin Dashboard</h2>
+      <Sidebar role="admin"/>
 
-<div style={{display:"flex",gap:"20px"}}>
+      <div style={{flex:1}}>
 
-<div style={styles.card}>
-<h3>Manage Events</h3>
-<Link to="/admin/events">Open</Link>
-</div>
+        <Navbar/>
 
-</div>
+        <div style={{padding:"30px"}}>
 
-</div>
+          <h1>Admin Dashboard</h1>
 
-)
+          <p>Welcome Admin. Manage your events here.</p>
 
-}
+        </div>
 
-const styles={
+      </div>
 
-card:{
-background:"linear-gradient(135deg,#E9D5FF,#C7D2FE)",
-padding:"30px",
-borderRadius:"10px"
-}
+    </div>
+
+  )
 
 }
 
