@@ -29,7 +29,7 @@ This is a beginner-friendly event management project with a React frontend and a
 Copy `.env.example` and set:
 
 ```env
-VITE_API_BASE_URL=http://localhost/event-management-system-main/event-management-system-main/backend/api
+REACT_APP_API_BASE_URL=http://localhost/event-management-system-main/backend/api
 ```
 
 ## Build For Production
@@ -50,3 +50,4 @@ The `node_modules/` and `build/` folders are generated automatically. If you nee
 npm install
 npm run build
 ```
+

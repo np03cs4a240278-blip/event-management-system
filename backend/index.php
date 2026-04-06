@@ -2,10 +2,10 @@
 
 session_start();
 
-$allowedOrigins = ['http://localhost:3000'];
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$isLocalFrontend = preg_match('/^http:\/\/localhost:\d+$/', $origin) === 1;
 
-if (in_array($origin, $allowedOrigins, true)) {
+if ($isLocalFrontend) {
     header("Access-Control-Allow-Origin: $origin");
     header('Vary: Origin');
 }
