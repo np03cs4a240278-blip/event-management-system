@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 class Event
 {
-    public function __construct(private readonly PDO $database)
+    private PDO $database;
+
+    public function __construct(PDO $database)
     {
+        $this->database = $database;
     }
 
     public function all(?string $search = null, ?string $location = null): array

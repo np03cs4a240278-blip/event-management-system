@@ -1,133 +1,107 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import API from "../services/api";
+// Login.js — Sign in page
+// Sends email + password to the PHP backend via API.post("/login")
+// On success, AuthContext saves the user and redirects to dashboard
+
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/apiError";
+import "./theme.css";
+import "./Login.css";
 
-function getHomeRoute(user) {
-  if (user?.must_change_password) {
-    return "/profile";
-  }
-
-  return user?.role === "admin" ? "/admin/dashboard" : "/events";
-}
-
-function Login() {
-  const navigate = useNavigate();
+export default function Login() {
   const { user, loading, login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
+  const [email, setEmail]       = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError]       = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  // If already logged in, redirect immediately
   useEffect(() => {
     if (!loading && user) {
-      navigate(getHomeRoute(user), {
-        replace: true,
-      });
+      navigate(user.role === "admin" ? "/admin-dashboard" : "/user-dashboard", { replace: true });
     }
-  }, [loading, navigate, user]);
+  }, [loading, user, navigate]);
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    setSubmitting(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError("");
+    setSubmitting(true);
 
     try {
-      const authenticatedUser = await login({ email, password });
-      navigate(getHomeRoute(authenticatedUser), {
-        replace: true,
-      });
-    } catch (requestError) {
-      setError(getErrorMessage(requestError, "Login failed."));
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleForgotPassword = async () => {
-    if (!email.trim()) {
-      setError("Enter your email first, then click Forgot password.");
-      return;
-    }
-
-    setSubmitting(true);
-    setError("");
-
-    try {
-      const response = await API.post("/forgot-password", {
-        email,
-      });
-
-      const defaultPassword = response.data.default_password || "";
-      setPassword(defaultPassword);
-      window.alert(`Your default password for your account is "${defaultPassword}"`);
-    } catch (requestError) {
-      setError(getErrorMessage(requestError, "Could not reset password."));
+      // POST /api/login → { email, password }
+      const loggedInUser = await login({ email, password });
+      navigate(loggedInUser.role === "admin" ? "/admin-dashboard" : "/user-dashboard", { replace: true });
+    } catch (err) {
+      setError(getErrorMessage(err, "Invalid email or password."));
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <p className="eyebrow">Event System</p>
-        <h1>Welcome back</h1>
-        <p className="auth-subtitle">Sign in to browse events or manage the platform.</p>
+    <div className="login-page">
 
-        {loading ? <p className="message">Checking your session...</p> : null}
-        {error ? <p className="message message-error">{error}</p> : null}
-
-        <form className="auth-form" onSubmit={handleLogin}>
-          <label className="field">
-            <span>Email</span>
-            <input
-              onChange={(inputEvent) => setEmail(inputEvent.target.value)}
-              placeholder="you@example.com"
-              required
-              type="email"
-              value={email}
-            />
-          </label>
-
-          <label className="field">
-            <span>Password</span>
-            <input
-              onChange={(inputEvent) => setPassword(inputEvent.target.value)}
-              placeholder="Enter your password"
-              required
-              type="password"
-              value={password}
-            />
-          </label>
-
-          <button
-            onClick={handleForgotPassword}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#8b5cf6",
-              cursor: "pointer",
-              padding: 0,
-              textAlign: "left",
-            }}
-            type="button"
-          >
-            Forgot password?
-          </button>
-
-          <button className="button auth-button" disabled={submitting || loading} type="submit">
-            {submitting ? "Signing in..." : "Login"}
-          </button>
-        </form>
-
-        <p className="auth-footer">
-          Don&apos;t have an account? <Link to="/signup">Create one here</Link>
-        </p>
+      <div className="login-header theme-header">
+        <h1 className="site-name">EVENT MANAGEMENT SYSTEM</h1>
+        <p className="site-tagline">Sign in to your account</p>
       </div>
+
+      <div className="login-wrapper">
+        <div className="login-card theme-card">
+
+          <h2 className="login-title">Welcome Back</h2>
+          <p className="login-sub">Enter your details to continue</p>
+
+          {loading && <p style={{ textAlign: "center", color: "#9CA3AF" }}>Checking session...</p>}
+          {error && <div className="login-error">{error}</div>}
+
+          <form onSubmit={handleSubmit}>
+
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <input
+                type="email"
+                className="theme-input"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input
+                type="password"
+                className="theme-input"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="theme-btn login-submit-btn"
+              disabled={submitting || loading}
+            >
+              {submitting ? "Signing in..." : "Sign In"}
+            </button>
+
+          </form>
+
+          <p className="login-footer-text">
+            Don't have an account?{" "}
+            <Link to="/register" className="theme-link">Register here</Link>
+          </p>
+
+        </div>
+      </div>
+
     </div>
   );
 }
-
-export default Login;

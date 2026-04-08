@@ -20,7 +20,7 @@ function ProtectedRoute({ allowedRoles }) {
   }
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   if (user.must_change_password && location.pathname !== "/profile") {

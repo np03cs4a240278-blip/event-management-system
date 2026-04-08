@@ -1,11 +1,78 @@
 <?php
 
+function isPrivateOrLoopbackAddress($host)
+{
+    if (!filter_var($host, FILTER_VALIDATE_IP)) {
+        return false;
+    }
+
+    if ($host === '127.0.0.1' || $host === '::1') {
+        return true;
+    }
+
+    return !filter_var(
+        $host,
+        FILTER_VALIDATE_IP,
+        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+    );
+}
+
+function getAllowedOrigins()
+{
+    $rawOrigins = getenv('ALLOWED_ORIGINS') ?: '';
+
+    if ($rawOrigins === '') {
+        return [];
+    }
+
+    return array_values(array_filter(array_map('trim', explode(',', $rawOrigins))));
+}
+
+function isAllowedFrontendOrigin($origin)
+{
+    if ($origin === '') {
+        return false;
+    }
+
+    if (in_array($origin, getAllowedOrigins(), true)) {
+        return true;
+    }
+
+    $parts = parse_url($origin);
+
+    if (!$parts || empty($parts['scheme']) || empty($parts['host'])) {
+        return false;
+    }
+
+    if (!in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
+        return false;
+    }
+
+    $host = strtolower($parts['host']);
+
+    if (in_array($host, ['localhost', '127.0.0.1', '::1'], true)) {
+        return true;
+    }
+
+    if (substr($host, -6) === '.local') {
+        return true;
+    }
+
+    if (isPrivateOrLoopbackAddress($host)) {
+        return true;
+    }
+
+    $serverHostHeader = $_SERVER['HTTP_HOST'] ?? '';
+    $serverHost = strtolower(explode(':', $serverHostHeader)[0] ?? '');
+
+    return $serverHost !== '' && $host === $serverHost;
+}
+
 session_start();
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$isLocalFrontend = preg_match('/^http:\/\/localhost:\d+$/', $origin) === 1;
 
-if ($isLocalFrontend) {
+if (isAllowedFrontendOrigin($origin)) {
     header("Access-Control-Allow-Origin: $origin");
     header('Vary: Origin');
 }

@@ -1,0 +1,81 @@
+/* theme.css — Shared colors and components used on every page */
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #F8F9FD;
+  font-family: Arial, sans-serif;
+  color: #1E1B4B;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after { box-sizing: inherit; }
+
+.theme-header {
+  background: linear-gradient(135deg, #FBCFE8, #A5B4FC);
+  padding: 16px 32px;
+}
+
+.theme-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(165, 180, 252, 0.15);
+  border: 1px solid #E5E7EB;
+}
+
+.theme-btn {
+  background: #A5B4FC;
+  color: #1E1B4B;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.theme-btn:hover { background: #818CF8; color: #fff; }
+
+.theme-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  color: #1E1B4B;
+  transition: border-color 0.2s;
+}
+.theme-input:focus {
+  border-color: #A5B4FC;
+  box-shadow: 0 0 0 3px rgba(165, 180, 252, 0.2);
+}
+
+.theme-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1E1B4B;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #A5B4FC;
+}
+
+.theme-stat-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(165, 180, 252, 0.15);
+  border-top: 4px solid #A5B4FC;
+}
+.theme-stat-card .stat-number { font-size: 26px; font-weight: 700; color: #818CF8; margin: 6px 0 4px; }
+.theme-stat-card .stat-label  { font-size: 13px; color: #9CA3AF; }
+
+.theme-link { color: #818CF8; font-weight: 600; text-decoration: none; }
+.theme-link:hover { color: #A5B4FC; text-decoration: underline; }
+
+.theme-badge { display: inline-block; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+.theme-badge.user  { background: #EDE9FE; color: #6D28D9; }
+.theme-badge.admin { background: #FCE7F3; color: #9D174D; }

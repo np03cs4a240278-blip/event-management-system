@@ -32,6 +32,19 @@ Copy `.env.example` and set:
 REACT_APP_API_BASE_URL=http://localhost/event-management-system-main/backend/api
 ```
 
+If a friend keeps the project in a different XAMPP folder name, they must update that path so it matches their own `htdocs` folder exactly. For example, if they extracted the project as `event-management-system`, the API URL should point to `http://localhost/event-management-system/backend/api`.
+
+The frontend now also falls back to the current machine hostname instead of forcing `localhost`, which helps when someone opens the frontend with `127.0.0.1` or a LAN IP.
+
+## Common Login Issue On Another Laptop
+
+If login does nothing or always fails on one machine while it works on others, check these first:
+
+1. Open the frontend and backend with the same host name style on that laptop. Example: use `localhost` for both, or use `127.0.0.1` for both.
+2. Make sure `.env` points to the correct XAMPP project folder path for that laptop.
+3. Confirm Apache and MySQL are both running in XAMPP before trying to log in.
+4. If the frontend is opened from another device on the same network, add its exact origin to `ALLOWED_ORIGINS` in the Apache/PHP environment.
+
 ## Build For Production
 
 Run:
