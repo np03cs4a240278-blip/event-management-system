@@ -1,0 +1,17 @@
+.event-card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
+width:220px;
+}
+
+.event-card button{
+background:#C4B5FD;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+color:white;
+cursor:pointer;
+margin-top:10px;
+}

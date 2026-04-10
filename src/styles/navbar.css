@@ -1,0 +1,24 @@
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px;
+background:white;
+border-bottom:1px solid #eee;
+}
+
+.search{
+padding:10px;
+width:250px;
+border-radius:8px;
+border:1px solid #ddd;
+}
+
+.create-btn{
+background:linear-gradient(135deg,#E9D5FF,#C7D2FE);
+border:none;
+padding:10px 15px;
+border-radius:8px;
+color:white;
+cursor:pointer;
+}
