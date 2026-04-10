@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-<<<<<<< HEAD
 import myLogo from "../assets/mylogo.png";
-=======
->>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
 import "./Home.css";
 import "./theme.css";
 
@@ -20,13 +17,9 @@ export default function Home() {
 
       {/* NAVBAR */}
       <header className="home-navbar">
-<<<<<<< HEAD
         <div className="home-navbar-brand">
           <img src={myLogo} alt="Event Management System" style={{ height: 44, width: "auto", display: "block" }} />
         </div>
-=======
-        <div className="home-navbar-brand">EVENT MANAGEMENT SYSTEM</div>
->>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
         <nav className="home-navbar-links">
           <a href="#about">About</a>
           <a href="#events">Events</a>

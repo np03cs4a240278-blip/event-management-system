@@ -3,10 +3,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-<<<<<<< HEAD
 import myLogo from "../assets/mylogo.png";
-=======
->>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
 import "./theme.css";
 import "./Navbar.css";
 
@@ -30,11 +27,7 @@ export default function Navbar() {
 
       <nav className="app-navbar theme-header">
         <div className="app-navbar-brand" onClick={() => navigate("/")}>
-<<<<<<< HEAD
           <img src={myLogo} alt="Event Management System" style={{ height: 44, width: "auto", display: "block" }} />
-=======
-          EVENT MANAGEMENT SYSTEM
->>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
         </div>
 
         {/* Desktop links */}

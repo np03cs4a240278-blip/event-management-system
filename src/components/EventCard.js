@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-function EventCard({ event, bookEvent }) {
-  return (
-    <div style={styles.card}>
-      <h3>{event.name}</h3>
-      <p>{event.date}</p>
-      <p>{event.location}</p>
-
-      <button onClick={() => bookEvent(event)}>Book Event</button>
-    </div>
-  );
-}
-
-const styles = {
-  card: {
-    background: "white",
-    padding: "20px",
-    borderRadius: "10px",
-    boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
-    width: "220px",
-  },
-};
-
-=======
->>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
 import { formatDate, formatPrice } from "../utils/formatters";
 
 const FALLBACK_IMAGE =
@@ -60,8 +33,4 @@ function EventCard({ event, onBook, isBooking, alreadyBooked }) {
   );
 }
 
-<<<<<<< HEAD
-=======
->>>>>>> Backend
->>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
 export default EventCard;
