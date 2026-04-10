@@ -15,6 +15,7 @@
 .login-submit-btn { width: 100%; padding: 12px; font-size: 15px; margin-top: 4px; }
 .login-hint { background: #EDE9FE; color: #5B21B6; border-radius: 8px; padding: 10px 14px; font-size: 12px; text-align: center; margin-top: 16px; }
 .login-footer-text { text-align: center; font-size: 14px; color: #4B5563; margin-top: 16px; }
+<<<<<<< HEAD
 
 /* ── Role Selector ── */
 .role-selector {
@@ -63,3 +64,5 @@
   font-weight: 700;
   color: #1E1B4B;
 }
+=======
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f

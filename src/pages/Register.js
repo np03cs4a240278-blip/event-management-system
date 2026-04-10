@@ -1,10 +1,18 @@
 // Register.js — Sign up page
+<<<<<<< HEAD
+=======
+// Sends name + email + password to the PHP backend via API.post("/register")
+// On success, redirects to login page
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
 
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/apiError";
+<<<<<<< HEAD
 import myLogo from "../assets/mylogo.png";
+=======
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
 import "./theme.css";
 import "./Login.css";
 
@@ -12,7 +20,10 @@ export default function Register() {
   const { user, loading, register } = useAuth();
   const navigate = useNavigate();
 
+<<<<<<< HEAD
   const [role, setRole]                       = useState("user");
+=======
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
   const [name, setName]                       = useState("");
   const [email, setEmail]                     = useState("");
   const [password, setPassword]               = useState("");
@@ -21,6 +32,10 @@ export default function Register() {
   const [success, setSuccess]                 = useState("");
   const [submitting, setSubmitting]           = useState(false);
 
+<<<<<<< HEAD
+=======
+  // If already logged in, redirect
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
   useEffect(() => {
     if (!loading && user) {
       navigate(user.role === "admin" ? "/admin-dashboard" : "/user-dashboard", { replace: true });
@@ -32,6 +47,7 @@ export default function Register() {
     setError("");
     setSuccess("");
 
+<<<<<<< HEAD
     if (!role)                          { setError("Please select a role."); return; }
     if (password !== confirmPassword)   { setError("Passwords do not match."); return; }
     if (password.length < 6)            { setError("Password must be at least 6 characters."); return; }
@@ -39,6 +55,22 @@ export default function Register() {
     setSubmitting(true);
     try {
       await register({ name, email, password, role });
+=======
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      // POST /api/register → { name, email, password }
+      await register({ name, email, password });
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
       setSuccess("Account created! Redirecting to login...");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
@@ -52,8 +84,12 @@ export default function Register() {
     <div className="login-page">
 
       <div className="login-header theme-header">
+<<<<<<< HEAD
         <img src={myLogo} alt="Event Management System"
           style={{ height: 70, width: "auto", margin: "0 auto 8px", display: "block" }} />
+=======
+        <h1 className="site-name">EVENT MANAGEMENT SYSTEM</h1>
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
         <p className="site-tagline">Create your account to get started</p>
       </div>
 
@@ -66,6 +102,7 @@ export default function Register() {
           {error   && <div className="login-error">{error}</div>}
           {success && <div className="login-success">{success}</div>}
 
+<<<<<<< HEAD
           {/* ── ROLE SELECTOR ── */}
           <div className="role-selector">
             <p className="role-selector__label">Register as *</p>
@@ -98,6 +135,8 @@ export default function Register() {
             </div>
           </div>
 
+=======
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
           <form onSubmit={handleSubmit}>
 
             <div className="form-group">
@@ -108,26 +147,40 @@ export default function Register() {
 
             <div className="form-group">
               <label className="form-label">Email Address *</label>
+<<<<<<< HEAD
               <input type="email" className="theme-input" placeholder="you@gmail.com"
+=======
+              <input type="email" className="theme-input" placeholder="you@example.com"
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
                 value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
 
             <div className="form-group">
               <label className="form-label">Password *</label>
               <input type="password" className="theme-input" placeholder="Minimum 6 characters"
+<<<<<<< HEAD
                 autoComplete="new-password"
+=======
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
                 value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
 
             <div className="form-group">
               <label className="form-label">Confirm Password *</label>
               <input type="password" className="theme-input" placeholder="Re-enter your password"
+<<<<<<< HEAD
                 autoComplete="new-password"
+=======
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
                 value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
             </div>
 
             <button type="submit" className="theme-btn login-submit-btn" disabled={submitting}>
+<<<<<<< HEAD
               {submitting ? "Creating account..." : `Sign Up as ${role === "admin" ? "Admin" : "User"}`}
+=======
+              {submitting ? "Creating account..." : "Sign Up"}
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
             </button>
 
           </form>

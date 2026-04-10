@@ -1,3 +1,25 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+function Bookings(){
+
+return(
+
+<div style={{padding:"30px"}}>
+
+<h2>Your Bookings</h2>
+
+<p>No bookings yet.</p>
+
+</div>
+
+)
+
+}
+
+export default Bookings
+=======
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
 import { useEffect, useState } from "react";
 import AppShell from "../../components/AppShell";
 import API from "../../services/api";
@@ -13,6 +35,10 @@ function Bookings() {
 
   const loadBookings = async () => {
     setLoading(true);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
     try {
       const response = await API.get("/my-bookings");
       setBookings(response.data.bookings ?? []);
@@ -23,6 +49,7 @@ function Bookings() {
     }
   };
 
+<<<<<<< HEAD
   useEffect(() => { loadBookings(); }, []);
 
   const handleCancelBooking = async (bookingId) => {
@@ -30,6 +57,23 @@ function Bookings() {
     setCancelBookingId(bookingId);
     setError("");
     setSuccessMessage("");
+=======
+  useEffect(() => {
+    loadBookings();
+  }, []);
+
+  const handleCancelBooking = async (bookingId) => {
+    const shouldCancel = window.confirm("Do you want to cancel this booking?");
+
+    if (!shouldCancel) {
+      return;
+    }
+
+    setCancelBookingId(bookingId);
+    setError("");
+    setSuccessMessage("");
+
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
     try {
       await API.delete(`/bookings/${bookingId}`);
       setSuccessMessage("Booking cancelled successfully.");
@@ -45,10 +89,23 @@ function Bookings() {
     <AppShell subtitle="Review every event you have reserved so far." title="My Bookings">
       {error ? <p className="message message-error">{error}</p> : null}
       {successMessage ? <p className="message message-success">{successMessage}</p> : null}
+<<<<<<< HEAD
       {loading ? (
         <section className="panel"><p>Loading bookings...</p></section>
       ) : bookings.length === 0 ? (
         <section className="empty-state"><h3>No bookings yet</h3><p>Head to the Events page and book your first event.</p></section>
+=======
+
+      {loading ? (
+        <section className="panel">
+          <p>Loading bookings...</p>
+        </section>
+      ) : bookings.length === 0 ? (
+        <section className="empty-state">
+          <h3>No bookings yet</h3>
+          <p>Head to the Events page and book your first event.</p>
+        </section>
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
       ) : (
         <section className="card-grid">
           {bookings.map((booking) => (
@@ -62,7 +119,16 @@ function Bookings() {
                 <span>{formatPrice(booking.event.price)}</span>
               </div>
               <div className="form-actions">
+<<<<<<< HEAD
                 <button className="button button-danger" disabled={cancelBookingId === booking.id} onClick={() => handleCancelBooking(booking.id)} type="button">
+=======
+                <button
+                  className="button button-danger"
+                  disabled={cancelBookingId === booking.id}
+                  onClick={() => handleCancelBooking(booking.id)}
+                  type="button"
+                >
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
                   {cancelBookingId === booking.id ? "Cancelling..." : "Cancel Booking"}
                 </button>
               </div>
@@ -75,3 +141,7 @@ function Bookings() {
 }
 
 export default Bookings;
+<<<<<<< HEAD
+=======
+>>>>>>> Backend
+>>>>>>> 9b35fd94c228ec7931cb361d42260fd6c2e07d2f
