@@ -23,7 +23,7 @@ export default function Register() {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate(user.role === "admin" ? "/admin-dashboard" : "/user-dashboard", { replace: true });
+      navigate(user.role === "admin" ? "/admin/dashboard" : "/user-dashboard", { replace: true });
     }
   }, [loading, user, navigate]);
 

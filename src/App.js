@@ -11,13 +11,13 @@ import FeedbackForm from "./components/FeedbackForm";
 
 // Dashboard pages (theme-styled, backend-connected)
 import UserDashboard  from "./pages/UserDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
 import BookVenue      from "./pages/BookVenue";
 
-// App-shell pages (original backend-connected)
-import Profile        from "./pages/Profile";
+// Admin pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminBookings  from "./pages/admin/Bookings";
 import ManageEvents   from "./pages/admin/ManageEvents";
+import Profile        from "./pages/Profile";
 import UserBookings   from "./pages/user/Bookings";
 import Events         from "./pages/user/Events";
 
@@ -43,6 +43,7 @@ function App() {
 
           {/* Admin routes */}
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/admin/events"    element={<ManageEvents />} />
             <Route path="/admin/bookings"  element={<AdminBookings />} />

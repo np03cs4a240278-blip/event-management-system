@@ -9,7 +9,7 @@ import "./Login.css";
 
 function getHomeRoute(user) {
   if (user?.must_change_password) return "/profile";
-  return user?.role === "admin" ? "/admin-dashboard" : "/user-dashboard";
+  return user?.role === "admin" ? "/admin/dashboard" : "/user-dashboard";
 }
 
 function Login() {

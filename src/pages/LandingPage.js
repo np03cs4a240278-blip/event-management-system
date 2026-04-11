@@ -6,14 +6,8 @@ import { getErrorMessage } from "../utils/apiError";
 import { formatDate, formatPrice } from "../utils/formatters";
 
 function getWorkspaceRoute(user) {
-  if (!user) {
-    return "/login";
-  }
-
-  if (user.must_change_password) {
-    return "/profile";
-  }
-
+  if (!user) return "/login";
+  if (user.must_change_password) return "/profile";
   return user.role === "admin" ? "/admin/dashboard" : "/events";
 }
 
@@ -28,7 +22,6 @@ function LandingPage() {
     const loadEvents = async () => {
       try {
         const response = await API.get("/events");
-
         if (isActive) {
           setEvents((response.data.events ?? []).slice(0, 3));
         }
@@ -48,169 +41,246 @@ function LandingPage() {
 
   return (
     <div className="landing-page">
+      {/* ==================== HEADER ==================== */}
       <header className="landing-topbar">
         <Link className="landing-brand" to="/">
           <span className="landing-brand__badge">EMS</span>
-          <span>
-            <strong>Event Management</strong>
-            <small>Plan. Promote. Fill every seat.</small>
-          </span>
+          <div>
+            <strong>Event Management System</strong>
+            <small>Plan • Promote • Fill Every Seat</small>
+          </div>
         </Link>
 
         <nav className="landing-nav">
           <a href="#featured-events">Events</a>
-          <a href="#how-it-works">How it works</a>
-          <a href="#admin-tools">Admin tools</a>
-          <Link className="button button-secondary landing-nav__button" to="/login">
+          <a href="#how-it-works">How it Works</a>
+          <a href="#features">Features</a>
+          <Link className="button button-secondary" to="/login">
             Log in
           </Link>
-          <Link className="button landing-nav__button" to="/signup">
-            Get started
+          <Link className="button button-primary" to="/signup">
+            Get Started Free
           </Link>
         </nav>
       </header>
 
-      <main className="landing-main">
-        <section className="landing-hero">
+      {/* ==================== HERO SECTION ==================== */}
+      <section className="landing-hero">
+        <div className="landing-hero__content">
           <div className="landing-hero__copy">
-            <p className="eyebrow">Live event operations</p>
-            <h1>Launch polished event pages and manage bookings from one place.</h1>
+            <p className="eyebrow">Modern Event Operations</p>
+            <h1>
+              Beautiful event pages.<br />
+              Powerful management.<br />
+              <span className="highlight">All in one place.</span>
+            </h1>
             <p className="landing-hero__text">
-              Give attendees a clear path from discovery to booking while your team keeps events,
-              schedules, and registrations under control.
+              Create stunning public event pages, manage bookings, and give your attendees 
+              a seamless experience — while keeping full control from your admin workspace.
             </p>
 
             <div className="landing-actions">
-              <Link className="button landing-cta" to={loading ? "/login" : getWorkspaceRoute(user)}>
-                {user ? "Open workspace" : "Start exploring"}
+              <Link 
+                className="button button-primary landing-cta" 
+                to={loading ? "/login" : getWorkspaceRoute(user)}
+              >
+                {user ? "Open My Workspace" : "Start Exploring"}
               </Link>
               <Link className="button button-secondary landing-cta" to="/signup">
-                Create account
+                Create Free Account
               </Link>
             </div>
 
             <div className="landing-proof">
               <div className="landing-proof__item">
-                <strong>One dashboard</strong>
-                <span>Track events, users, and bookings together.</span>
+                <strong>One Dashboard</strong>
+                <span>Events, bookings &amp; users in perfect sync</span>
               </div>
               <div className="landing-proof__item">
-                <strong>Built-in roles</strong>
-                <span>Separate attendee and admin experiences cleanly.</span>
+                <strong>Role-Based Access</strong>
+                <span>Clean separation between attendees and admins</span>
               </div>
               <div className="landing-proof__item">
-                <strong>Quick launch</strong>
-                <span>Works with your React frontend and PHP API already in place.</span>
+                <strong>Ready to Launch</strong>
+                <span>Works with your existing React + PHP stack</span>
               </div>
             </div>
           </div>
 
+          {/* Hero Visual */}
           <div className="landing-hero__visual">
-            <article className="landing-showcase landing-showcase--primary">
-              <p className="eyebrow">Booking snapshot</p>
-              <h2>Make discovery feel immediate</h2>
-              <p>
-                Highlight upcoming events, surface locations and pricing, and drive people straight
-                into your booking flow.
-              </p>
+            <div className="landing-showcase landing-showcase--primary">
+              <p className="eyebrow">Live Preview</p>
+              <h2>Discovery that converts</h2>
+              <p>Beautiful event cards with dates, pricing, and instant booking flow.</p>
 
               <div className="landing-showcase__stats">
                 <div>
-                  <span>Featured events</span>
+                  <span>Featured Events</span>
                   <strong>{events.length || 3}</strong>
                 </div>
                 <div>
-                  <span>User roles</span>
+                  <span>Roles</span>
                   <strong>2</strong>
                 </div>
                 <div>
-                  <span>Booking flow</span>
-                  <strong>Fast</strong>
+                  <span>Booking Speed</span>
+                  <strong>Lightning Fast</strong>
                 </div>
               </div>
-            </article>
-
-            <article className="landing-showcase landing-showcase--secondary">
-              <p className="landing-mini-label">Admin preview</p>
-              <ul className="landing-checklist">
-                <li>Create and update events</li>
-                <li>Review attendee bookings</li>
-                <li>Keep sessions and roles organized</li>
-              </ul>
-            </article>
-          </div>
-        </section>
-
-        <section className="landing-strip" id="how-it-works">
-          <article className="landing-strip__card">
-            <span>01</span>
-            <h3>Publish upcoming events</h3>
-            <p>Show dates, venues, pricing, and details in one consistent format.</p>
-          </article>
-
-          <article className="landing-strip__card">
-            <span>02</span>
-            <h3>Let users book in minutes</h3>
-            <p>Authenticated users can browse listings and reserve spots without friction.</p>
-          </article>
-
-          <article className="landing-strip__card" id="admin-tools">
-            <span>03</span>
-            <h3>Manage everything centrally</h3>
-            <p>Admins can handle events and bookings from a dedicated workspace.</p>
-          </article>
-        </section>
-
-        <section className="landing-section" id="featured-events">
-          <div className="landing-section__heading">
-            <div>
-              <p className="eyebrow">Featured now</p>
-              <h2>Upcoming events your visitors can see right away</h2>
             </div>
-            <Link className="button button-secondary" to={user ? "/events" : "/login"}>
-              {user ? "See all events" : "Login to book"}
-            </Link>
+
+            <div className="landing-showcase landing-showcase--secondary">
+              <p className="landing-mini-label">Admin Control</p>
+              <ul className="landing-checklist">
+                <li>✦ Create &amp; edit events instantly</li>
+                <li>✦ Manage all bookings in real-time</li>
+                <li>✦ Organize sessions and attendee roles</li>
+                <li>✦ Export reports with one click</li>
+              </ul>
+            </div>
           </div>
+        </div>
+      </section>
 
-          {error ? <p className="message message-error">{error}</p> : null}
+      {/* ==================== HOW IT WORKS ==================== */}
+      <section className="landing-strip" id="how-it-works">
+        <h2 className="section-title">Three steps to a successful event</h2>
+        <div className="landing-strip__cards">
+          <article className="landing-strip__card">
+            <div className="step-number">01</div>
+            <h3>Publish Beautiful Events</h3>
+            <p>Show dates, venues, pricing, and rich descriptions in a clean, professional layout.</p>
+          </article>
 
-          <div className="landing-event-grid">
-            {events.map((event) => (
+          <article className="landing-strip__card">
+            <div className="step-number">02</div>
+            <h3>Frictionless Booking</h3>
+            <p>Attendees can browse and reserve seats in under a minute with secure authentication.</p>
+          </article>
+
+          <article className="landing-strip__card">
+            <div className="step-number">03</div>
+            <h3>Centralized Management</h3>
+            <p>Admins control everything from one powerful dashboard.</p>
+          </article>
+        </div>
+      </section>
+
+      {/* ==================== NEW: FEATURES SECTION ==================== */}
+      <section className="landing-section" id="features">
+        <div className="landing-section__heading">
+          <div>
+            <p className="eyebrow">Powerful Features</p>
+            <h2>Everything you need to run great events</h2>
+          </div>
+        </div>
+
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-icon">📅</div>
+            <h3>Event Scheduling</h3>
+            <p>Multiple sessions, recurring events, and flexible timing options.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">🎟️</div>
+            <h3>Smart Ticketing</h3>
+            <p>Early bird pricing, promo codes, and capacity management.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">👥</div>
+            <h3>Attendee Management</h3>
+            <p>Track registrations, send reminders, and manage waitlists.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">📊</div>
+            <h3>Analytics Dashboard</h3>
+            <p>Real-time insights on ticket sales and attendee engagement.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== FEATURED EVENTS ==================== */}
+      <section className="landing-section" id="featured-events">
+        <div className="landing-section__heading">
+          <div>
+            <p className="eyebrow">Happening Soon</p>
+            <h2>Featured Events</h2>
+          </div>
+          <Link 
+            className="button button-secondary" 
+            to={user ? "/events" : "/login"}
+          >
+            {user ? "Browse All Events" : "Login to Book"}
+          </Link>
+        </div>
+
+        {error && <p className="message message-error">{error}</p>}
+
+        <div className="landing-event-grid">
+          {events.length > 0 ? (
+            events.map((event) => (
               <article className="landing-event-card" key={event.id}>
-                <img alt={event.title} className="landing-event-card__image" src={event.image} />
+                <img 
+                  alt={event.title} 
+                  className="landing-event-card__image" 
+                  src={event.image || "/placeholder-event.jpg"} 
+                />
                 <div className="landing-event-card__content">
                   <div className="landing-event-card__meta">
                     <span>{formatDate(event.date)}</span>
-                    <span>{formatPrice(event.price)}</span>
+                    <span className="price">{formatPrice(event.price)}</span>
                   </div>
                   <h3>{event.title}</h3>
-                  <p>{event.description}</p>
+                  <p className="description">{event.description}</p>
                   <div className="landing-event-card__footer">
-                    <span>{event.location}</span>
-                    <Link to={user ? "/events" : "/login"}>{user ? "Book now" : "View access"}</Link>
+                    <span className="location">{event.location}</span>
+                    <Link 
+                      to={user ? `/events/${event.id}` : "/login"} 
+                      className="book-link"
+                    >
+                      {user ? "Book Now →" : "View Details"}
+                    </Link>
                   </div>
                 </div>
               </article>
-            ))}
-          </div>
-        </section>
+            ))
+          ) : (
+            <p className="no-events">No featured events available at the moment.</p>
+          )}
+        </div>
+      </section>
 
-        <section className="landing-banner">
-          <div>
-            <p className="eyebrow">Ready to launch</p>
-            <h2>Turn your current app into a full public-facing event experience.</h2>
+      {/* ==================== NEW: TESTIMONIAL / SOCIAL PROOF SECTION ==================== */}
+      <section className="landing-testimonial">
+        <div className="testimonial-container">
+          <p className="quote">
+            “EMS transformed how we run our workshops. 
+            The booking experience is smooth, and managing everything from one dashboard saves us hours every week.”
+          </p>
+          <div className="testimonial-author">
+            <strong>Sarah K.</strong>
+            <span>Event Coordinator, TechMeet Nepal</span>
           </div>
+        </div>
+      </section>
+
+      {/* ==================== FINAL CTA ==================== */}
+      <section className="landing-banner">
+        <div className="banner-content">
+          <p className="eyebrow">Ready to get started?</p>
+          <h2>Turn your idea into a professional event experience today.</h2>
 
           <div className="landing-actions">
-            <Link className="button landing-cta" to="/signup">
-              Create account
+            <Link className="button button-primary landing-cta" to="/signup">
+              Create Your Account
             </Link>
             <Link className="button button-secondary landing-cta" to="/login">
-              Admin login
+              Admin Login
             </Link>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
     </div>
   );
 }

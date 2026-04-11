@@ -4,85 +4,222 @@ import API from "../../services/api";
 import { getErrorMessage } from "../../utils/apiError";
 import { formatDate, formatPrice } from "../../utils/formatters";
 
-function Bookings() {
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+// Booking statuses are managed on the frontend only
+// (backend doesn't have a status column — extend schema to persist)
+const STATUS = { PENDING: "Pending", CONFIRMED: "Confirmed", DELETED: "Deleted" };
 
-  useEffect(() => {
-    let isActive = true;
+function BookingRow({ booking, onDelete, onConfirm }) {
+  const [review, setReview]     = useState(booking.adminNote || "");
+  const [editing, setEditing]   = useState(false);
+  const [saving, setSaving]     = useState(false);
+  const [status, setStatus]     = useState(booking.status || STATUS.PENDING);
 
-    const loadBookings = async () => {
-      try {
-        const response = await API.get("/all-bookings");
+  const handleConfirm = async () => {
+    setSaving(true);
+    await onConfirm(booking.id, review);
+    setStatus(STATUS.CONFIRMED);
+    setEditing(false);
+    setSaving(false);
+  };
 
-        if (isActive) {
-          setBookings(response.data.bookings ?? []);
-        }
-      } catch (requestError) {
-        if (isActive) {
-          setError(getErrorMessage(requestError, "Could not load bookings."));
-        }
-      } finally {
-        if (isActive) {
-          setLoading(false);
-        }
-      }
-    };
+  const handleDelete = async () => {
+    if (!window.confirm(`Remove booking by ${booking.user?.name} for "${booking.event?.title}"?`)) return;
+    await onDelete(booking.id);
+  };
 
-    loadBookings();
-
-    return () => {
-      isActive = false;
-    };
-  }, []);
+  const statusColor = {
+    [STATUS.PENDING]:   { background: "#fef3c7", color: "#92400e" },
+    [STATUS.CONFIRMED]: { background: "#d1fae5", color: "#065f46" },
+    [STATUS.DELETED]:   { background: "#fee2e2", color: "#b91c1c" },
+  }[status];
 
   return (
-    <AppShell
-      subtitle="Review booking activity across every user and event."
-      title="All Bookings"
-    >
-      {error ? <p className="message message-error">{error}</p> : null}
+    <article className="admin-booking-row">
+      <div className="admin-booking-row__info">
+        {/* User */}
+        <div>
+          <p className="eyebrow">User</p>
+          <strong>{booking.user?.name}</strong>
+          <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--muted)" }}>{booking.user?.email}</p>
+        </div>
+        {/* Event */}
+        <div>
+          <p className="eyebrow">Event</p>
+          <strong>{booking.event?.title}</strong>
+          <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--muted)" }}>
+            {booking.event?.location} · {formatDate(booking.event?.date)}
+          </p>
+        </div>
+        {/* Price */}
+        <div>
+          <p className="eyebrow">Price</p>
+          <strong>{formatPrice(booking.event?.price)}</strong>
+        </div>
+        {/* Booked on */}
+        <div>
+          <p className="eyebrow">Booked On</p>
+          <strong>{formatDate(booking.created_at?.slice(0, 10))}</strong>
+        </div>
+        {/* Status badge */}
+        <div>
+          <p className="eyebrow">Status</p>
+          <span style={{ ...statusColor, padding: "3px 12px", borderRadius: 999, fontSize: "0.82rem", fontWeight: 700 }}>
+            {status}
+          </span>
+        </div>
+      </div>
+
+      {/* Admin review box */}
+      <div className="admin-booking-row__review">
+        {editing ? (
+          <>
+            <textarea
+              className="admin-review-input"
+              onChange={(e) => setReview(e.target.value)}
+              placeholder="Write an admin note or review for this booking..."
+              rows={3}
+              value={review}
+            />
+            <div className="row-actions" style={{ marginTop: 8 }}>
+              <button className="button" disabled={saving} onClick={handleConfirm} type="button">
+                {saving ? "Saving..." : "Confirm & Save"}
+              </button>
+              <button className="button button-secondary" onClick={() => setEditing(false)} type="button">Cancel</button>
+            </div>
+          </>
+        ) : (
+          <>
+            {review ? (
+              <p className="admin-review-note">
+                <span className="eyebrow" style={{ display: "block", marginBottom: 2 }}>Admin Note</span>
+                {review}
+              </p>
+            ) : null}
+            <div className="row-actions">
+              {status !== STATUS.CONFIRMED ? (
+                <button className="button" onClick={() => setEditing(true)} type="button">
+                  ✓ Confirm
+                </button>
+              ) : (
+                <button className="button button-secondary" onClick={() => setEditing(true)} type="button">
+                  Edit Note
+                </button>
+              )}
+              <button className="button button-danger" onClick={handleDelete} type="button">Delete</button>
+            </div>
+          </>
+        )}
+      </div>
+    </article>
+  );
+}
+
+function Bookings() {
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState("");
+  const [search, setSearch]     = useState("");
+  const [feedback, setFeedback] = useState("");
+
+  const loadBookings = async () => {
+    setLoading(true);
+    try {
+      const res = await API.get("/all-bookings");
+      setBookings(res.data.bookings ?? []);
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not load bookings."));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { loadBookings(); }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      await API.delete(`/bookings/${id}`);
+      setBookings((prev) => prev.filter((b) => b.id !== id));
+      setFeedback("Booking removed successfully.");
+      setTimeout(() => setFeedback(""), 3000);
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not delete booking."));
+    }
+  };
+
+  const handleConfirm = async (id, note) => {
+    // Status + note are frontend-only until backend adds a status column
+    setFeedback(`Booking #${id} confirmed.`);
+    setTimeout(() => setFeedback(""), 3000);
+  };
+
+  const filtered = bookings.filter((b) => {
+    const q = search.toLowerCase();
+    return (
+      b.user?.name?.toLowerCase().includes(q) ||
+      b.user?.email?.toLowerCase().includes(q) ||
+      b.event?.title?.toLowerCase().includes(q) ||
+      b.event?.location?.toLowerCase().includes(q)
+    );
+  });
+
+  return (
+    <AppShell subtitle="Review every booking, confirm reservations, and add admin notes." title="All Bookings">
+
+      {error    ? <p className="message message-error">{error}</p>     : null}
+      {feedback ? <p className="message message-success">{feedback}</p> : null}
+
+      {/* Stats bar */}
+      <section className="stats-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
+        <article className="stat-card">
+          <span className="stat-card__label">Total Bookings</span>
+          <strong>{bookings.length}</strong>
+        </article>
+        <article className="stat-card">
+          <span className="stat-card__label">Unique Users</span>
+          <strong>{new Set(bookings.map((b) => b.user?.email)).size}</strong>
+        </article>
+        <article className="stat-card">
+          <span className="stat-card__label">Total Revenue</span>
+          <strong>Rs. {bookings.reduce((s, b) => s + (Number(b.event?.price) || 0), 0).toLocaleString()}</strong>
+        </article>
+      </section>
 
       <section className="panel">
-        {loading ? (
-          <p>Loading bookings...</p>
-        ) : bookings.length === 0 ? (
+        <div className="section-heading">
+          <div><p className="eyebrow">Booking records</p><h2>All Bookings</h2></div>
+          <span className="pill">{filtered.length} shown</span>
+        </div>
+
+        {/* Search */}
+        <label className="field" style={{ maxWidth: 360, marginBottom: "1rem" }}>
+          <span>Search by user, email or event</span>
+          <input
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Type to filter..."
+            type="text"
+            value={search}
+          />
+        </label>
+
+        {loading ? <p>Loading bookings...</p> : filtered.length === 0 ? (
           <div className="empty-state">
-            <h3>No bookings yet</h3>
-            <p>Bookings will appear here as soon as users reserve events.</p>
+            <h3>No bookings found</h3>
+            <p>{search ? "Try a different search term." : "Bookings will appear here once users reserve events."}</p>
           </div>
         ) : (
-          <div className="table-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Email</th>
-                  <th>Event</th>
-                  <th>Location</th>
-                  <th>Event Date</th>
-                  <th>Price</th>
-                  <th>Booked On</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.map((booking) => (
-                  <tr key={booking.id}>
-                    <td>{booking.user.name}</td>
-                    <td>{booking.user.email}</td>
-                    <td>{booking.event.title}</td>
-                    <td>{booking.event.location}</td>
-                    <td>{formatDate(booking.event.date)}</td>
-                    <td>{formatPrice(booking.event.price)}</td>
-                    <td>{formatDate(booking.created_at?.slice(0, 10))}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="admin-bookings-list">
+            {filtered.map((b) => (
+              <BookingRow
+                booking={b}
+                key={b.id}
+                onConfirm={handleConfirm}
+                onDelete={handleDelete}
+              />
+            ))}
           </div>
         )}
       </section>
+
     </AppShell>
   );
 }
