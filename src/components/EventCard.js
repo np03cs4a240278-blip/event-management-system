@@ -1,32 +1,36 @@
-function EventCard({event, bookEvent}){
+import { formatDate, formatPrice } from "../utils/formatters";
 
-return(
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80";
 
-<div style={styles.card}>
+function EventCard({ event, onBook, isBooking, alreadyBooked }) {
+  const imageSource = event.image?.trim() ? event.image : FALLBACK_IMAGE;
 
-<h3>{event.name}</h3>
-<p>{event.date}</p>
-<p>{event.location}</p>
+  return (
+    <article className="event-card">
+      <img alt={event.title} className="event-card__image" src={imageSource} />
 
-<button onClick={()=>bookEvent(event)}>
-Book Event</button>
+      <div className="event-card__content">
+        <div className="event-card__meta">
+          <span>{formatDate(event.date)}</span>
+          <span>{formatPrice(event.price)}</span>
+        </div>
 
-</div>
+        <h3>{event.title}</h3>
+        <p>{event.description}</p>
+        <p className="event-card__location">{event.location}</p>
 
-)
-
+        <button
+          className="button event-card__button"
+          disabled={alreadyBooked || isBooking}
+          onClick={() => onBook(event)}
+          type="button"
+        >
+          {alreadyBooked ? "Booked" : isBooking ? "Booking..." : "Book Event"}
+        </button>
+      </div>
+    </article>
+  );
 }
 
-const styles={
-
-card:{
-background:"white",
-padding:"20px",
-borderRadius:"10px",
-boxShadow:"0 3px 10px rgba(0,0,0,0.05)",
-width:"220px"
-}
-
-}
-
-export default EventCard
+export default EventCard;

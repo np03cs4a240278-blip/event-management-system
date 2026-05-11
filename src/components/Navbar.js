@@ -1,45 +1,24 @@
-import "../styles/navbar.css"
-function Navbar(){
+import { useAuth } from "../context/AuthContext";
 
-return(
+function Navbar({ title, subtitle, actions }) {
+  const { user } = useAuth();
 
-<div style={styles.navbar}>
+  return (
+    <header className="page-header">
+      <div>
+        <p className="eyebrow">{user?.role === "admin" ? "Admin workspace" : "User workspace"}</p>
+        <h1>{title}</h1>
+        {subtitle ? <p className="page-header__subtitle">{subtitle}</p> : null}
+      </div>
 
-<input placeholder="Search events..." style={styles.search}/>
-
-<button style={styles.button}>
-Create Event
-</button>
-
-</div>
-
-)
-
+      <div className="page-header__actions">
+        {actions}
+        {user ? (
+          <span className={`role-badge role-badge--${user.role}`}>{user.role}</span>
+        ) : null}
+      </div>
+    </header>
+  );
 }
 
-const styles={
-
-navbar:{
-display:"flex",
-justifyContent:"space-between",
-padding:"20px",
-background:"white"
-},
-
-search:{
-padding:"8px",
-borderRadius:"6px",
-border:"1px solid #ddd"
-},
-
-button:{
-background:"#C4B5FD",
-border:"none",
-padding:"10px 15px",
-borderRadius:"6px",
-color:"white"
-}
-
-}
-
-export default Navbar
+export default Navbar;
