@@ -1,3 +1,5 @@
+// Login.js — Login page with role selector
+
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
@@ -15,11 +17,11 @@ function getHomeRoute(user) {
 function Login() {
   const navigate = useNavigate();
   const { user, loading, login } = useAuth();
-  const [role, setRole]           = useState("");
-  const [email, setEmail]         = useState("");
-  const [password, setPassword]   = useState("");
+  const [role, setRole]             = useState("");
+  const [email, setEmail]           = useState("");
+  const [password, setPassword]     = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError]         = useState("");
+  const [error, setError]           = useState("");
 
   useEffect(() => {
     if (!loading && user) navigate(getHomeRoute(user), { replace: true });
@@ -84,40 +86,24 @@ function Login() {
           {loading && <p style={{ textAlign: "center", color: "#9CA3AF", fontSize: 13 }}>Checking session...</p>}
           {error   && <div className="login-error">{error}</div>}
 
-          {/* ── ROLE SELECTOR ── */}
+          {/* Role selector */}
           <div className="role-selector">
             <p className="role-selector__label">Login as *</p>
             <div className="role-selector__options">
-
               <label className={`role-option ${role === "user" ? "role-option--active" : ""}`}>
-                <input
-                  type="radio"
-                  name="role"
-                  value="user"
-                  checked={role === "user"}
-                  onChange={() => handleRoleSelect("user")}
-                />
+                <input type="radio" name="role" value="user" checked={role === "user"} onChange={() => handleRoleSelect("user")} />
                 <span className="role-option__icon">👤</span>
                 <span className="role-option__text">User</span>
               </label>
-
               <label className={`role-option ${role === "admin" ? "role-option--active" : ""}`}>
-                <input
-                  type="radio"
-                  name="role"
-                  value="admin"
-                  checked={role === "admin"}
-                  onChange={() => handleRoleSelect("admin")}
-                />
+                <input type="radio" name="role" value="admin" checked={role === "admin"} onChange={() => handleRoleSelect("admin")} />
                 <span className="role-option__icon">🛡️</span>
                 <span className="role-option__text">Admin</span>
               </label>
-
             </div>
           </div>
 
           <form onSubmit={handleLogin} autoComplete="off">
-
             <div className="form-group">
               <label className="form-label">Email Address *</label>
               <input
@@ -156,7 +142,6 @@ function Login() {
             <button type="submit" className="theme-btn login-submit-btn" disabled={submitting || loading}>
               {submitting ? "Signing in..." : `Login as ${role === "admin" ? "Admin" : role === "user" ? "User" : "..."}`}
             </button>
-
           </form>
 
           <p className="login-footer-text">

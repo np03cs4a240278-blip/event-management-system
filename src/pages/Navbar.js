@@ -1,4 +1,5 @@
-// Navbar.js — Shared navigation bar for dashboard pages
+// Navbar.js — Shared navigation bar for dashboard pages (legacy, used by some pages)
+// The AppShell-based pages use components/Navbar.js instead.
 
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -14,22 +15,21 @@ export default function Navbar() {
   const isAdmin = user?.role === "admin";
 
   const links = isAdmin
-    ? [{ to: "/admin-dashboard", label: "Dashboard" }]
+    ? [{ to: "/admin/dashboard", label: "Dashboard" }]
     : [
         { to: "/user-dashboard", label: "Dashboard" },
-        { to: "/events", label: "Events" },
-        { to: "/bookings", label: "My Bookings" },
-        { to: "/profile", label: "Profile" },
+        { to: "/events",         label: "Events" },
+        { to: "/bookings",       label: "My Bookings" },
+        { to: "/profile",        label: "Profile" },
       ];
 
   const handleLogout = async () => {
-    await logout(); // calls /api/logout on the backend
+    await logout();
     navigate("/login");
   };
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 200 }}>
-
       <nav className="app-navbar theme-header">
         <div className="app-navbar-brand" onClick={() => navigate("/")}>
           <img src={myLogo} alt="Event Management System" style={{ height: 44, width: "auto", display: "block" }} />
@@ -71,10 +71,7 @@ export default function Navbar() {
             <button
               key={link.to}
               className="app-mobile-link"
-              onClick={() => {
-                setMenuOpen(false);
-                navigate(link.to);
-              }}
+              onClick={() => { setMenuOpen(false); navigate(link.to); }}
             >
               {link.label}
             </button>
@@ -83,7 +80,6 @@ export default function Navbar() {
           <button className="app-mobile-link app-mobile-logout" onClick={handleLogout}>Logout</button>
         </div>
       )}
-
     </div>
   );
 }

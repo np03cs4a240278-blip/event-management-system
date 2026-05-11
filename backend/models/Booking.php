@@ -12,18 +12,13 @@ class Booking
     // Check if user already booked this event
     public function existsForUserEvent($userId, $eventId)
     {
-        $sql = "SELECT id FROM bookings WHERE user_id = :user_id AND event_id = :event_id LIMIT 1";
+        $sql  = "SELECT id FROM bookings WHERE user_id = :user_id AND event_id = :event_id LIMIT 1";
         $stmt = $this->db->prepare($sql);
-
-        $stmt->execute([
-            'user_id' => $userId,
-            'event_id' => $eventId
-        ]);
-
+        $stmt->execute(['user_id' => $userId, 'event_id' => $eventId]);
         return $stmt->fetch() ? true : false;
     }
 
-    // Create booking
+    // Create booking with full details
     public function create($userId, $eventId, $details = [])
     {
         $sql = "INSERT INTO bookings (
@@ -37,27 +32,27 @@ class Booking
                     :special_request, :extra_services, :venue_price, :package_price,
                     :guest_price, :services_price, :total_price
                 )";
-        $stmt = $this->db->prepare($sql);
 
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            'user_id' => $userId,
-            'event_id' => $eventId,
-            'status' => $details['status'] ?? 'pending',
-            'admin_note' => $details['admin_note'] ?? null,
-            'event_type' => $details['event_type'] ?? null,
-            'package_name' => $details['package_name'] ?? null,
-            'start_date' => $details['start_date'] ?? null,
-            'end_date' => $details['end_date'] ?? null,
-            'event_date' => $details['event_date'] ?? null,
-            'time_slot' => $details['time_slot'] ?? null,
-            'guest_count' => $details['guest_count'] ?? 1,
+            'user_id'         => $userId,
+            'event_id'        => $eventId,
+            'status'          => $details['status']          ?? 'pending',
+            'admin_note'      => $details['admin_note']      ?? null,
+            'event_type'      => $details['event_type']      ?? null,
+            'package_name'    => $details['package_name']    ?? null,
+            'start_date'      => $details['start_date']      ?? null,
+            'end_date'        => $details['end_date']        ?? null,
+            'event_date'      => $details['event_date']      ?? null,
+            'time_slot'       => $details['time_slot']       ?? null,
+            'guest_count'     => $details['guest_count']     ?? 1,
             'special_request' => $details['special_request'] ?? null,
-            'extra_services' => $details['extra_services'] ?? null,
-            'venue_price' => $details['venue_price'] ?? 0,
-            'package_price' => $details['package_price'] ?? 0,
-            'guest_price' => $details['guest_price'] ?? 0,
-            'services_price' => $details['services_price'] ?? 0,
-            'total_price' => $details['total_price'] ?? 0,
+            'extra_services'  => $details['extra_services']  ?? null,
+            'venue_price'     => $details['venue_price']     ?? 0,
+            'package_price'   => $details['package_price']   ?? 0,
+            'guest_price'     => $details['guest_price']     ?? 0,
+            'services_price'  => $details['services_price']  ?? 0,
+            'total_price'     => $details['total_price']     ?? 0,
         ]);
 
         return $this->findById((int)$this->db->lastInsertId());
@@ -70,20 +65,17 @@ class Booking
         $stmt->execute(['id' => $id]);
 
         $booking = $stmt->fetch() ?: null;
+        if (!$booking) return null;
 
-        if (!$booking) {
-            return null;
-        }
-
-        $booking['id'] = (int)$booking['id'];
-        $booking['user_id'] = (int)$booking['user_id'];
-        $booking['event_id'] = (int)$booking['event_id'];
-        $booking['guest_count'] = (int)($booking['guest_count'] ?? 1);
-        $booking['venue_price'] = (float)($booking['venue_price'] ?? 0);
-        $booking['package_price'] = (float)($booking['package_price'] ?? 0);
-        $booking['guest_price'] = (float)($booking['guest_price'] ?? 0);
+        $booking['id']             = (int)$booking['id'];
+        $booking['user_id']        = (int)$booking['user_id'];
+        $booking['event_id']       = (int)$booking['event_id'];
+        $booking['guest_count']    = (int)($booking['guest_count']    ?? 1);
+        $booking['venue_price']    = (float)($booking['venue_price']    ?? 0);
+        $booking['package_price']  = (float)($booking['package_price']  ?? 0);
+        $booking['guest_price']    = (float)($booking['guest_price']    ?? 0);
         $booking['services_price'] = (float)($booking['services_price'] ?? 0);
-        $booking['total_price'] = (float)($booking['total_price'] ?? 0);
+        $booking['total_price']    = (float)($booking['total_price']    ?? 0);
         $booking['extra_services'] = $this->decodeExtraServices($booking['extra_services'] ?? null);
 
         return $booking;
@@ -94,22 +86,20 @@ class Booking
     {
         $stmt = $this->db->prepare("DELETE FROM bookings WHERE id = :id");
         $stmt->execute(['id' => $id]);
-
         return $stmt->rowCount() > 0;
     }
 
+    // Update booking status and admin note (admin confirm/review)
     public function updateReview($id, $status, $adminNote = null)
     {
         $stmt = $this->db->prepare(
             "UPDATE bookings SET status = :status, admin_note = :admin_note WHERE id = :id"
         );
-
         $stmt->execute([
-            'id' => $id,
-            'status' => $status,
+            'id'         => $id,
+            'status'     => $status,
             'admin_note' => $adminNote,
         ]);
-
         return $this->findById($id);
     }
 
@@ -126,30 +116,29 @@ class Booking
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['user_id' => $userId]);
-
         $results = $stmt->fetchAll();
 
         $bookings = [];
-
         foreach ($results as $row) {
             $bookings[] = [
-                'id' => (int)$row['id'],
-                'status' => $row['status'] ?? 'pending',
-                'admin_note' => $row['admin_note'] ?? null,
-                'event_type' => $row['event_type'] ?? null,
-                'package_name' => $row['package_name'] ?? null,
-                'guest_count' => (int)($row['guest_count'] ?? 1),
-                'total_price' => (float)($row['total_price'] ?? 0),
+                'id'             => (int)$row['id'],
+                'status'         => $row['status']       ?? 'pending',
+                'admin_note'     => $row['admin_note']   ?? null,
+                'event_type'     => $row['event_type']   ?? null,
+                'package_name'   => $row['package_name'] ?? null,
+                'guest_count'    => (int)($row['guest_count']  ?? 1),
+                'total_price'    => (float)($row['total_price'] ?? 0),
+                'event_date'     => $row['event_date']   ?? null,
                 'extra_services' => $this->decodeExtraServices($row['extra_services'] ?? null),
-                'created_at' => $row['created_at'],
-                'event' => [
-                    'id' => (int)$row['event_id'],
-                    'title' => $row['title'],
+                'created_at'     => $row['created_at'],
+                'event'          => [
+                    'id'          => (int)$row['event_id'],
+                    'title'       => $row['title'],
                     'description' => $row['description'],
-                    'date' => $row['date'],
-                    'location' => $row['location'],
-                    'price' => (float)$row['price'],
-                    'image' => $row['image']
+                    'date'        => $row['date'],
+                    'location'    => $row['location'],
+                    'price'       => (float)$row['price'],
+                    'image'       => $row['image']
                 ]
             ];
         }
@@ -168,33 +157,31 @@ class Booking
             ORDER BY b.created_at DESC
         ";
 
-        $stmt = $this->db->query($sql);
+        $stmt    = $this->db->query($sql);
         $results = $stmt->fetchAll();
 
         $bookings = [];
-
         foreach ($results as $row) {
             $bookings[] = [
-                'id' => (int)$row['id'],
-                'status' => $row['status'] ?? 'pending',
-                'admin_note' => $row['admin_note'] ?? null,
-                'event_type' => $row['event_type'] ?? null,
+                'id'           => (int)$row['id'],
+                'status'       => $row['status']       ?? 'pending',
+                'admin_note'   => $row['admin_note']   ?? null,
+                'event_type'   => $row['event_type']   ?? null,
                 'package_name' => $row['package_name'] ?? null,
-                'guest_count' => (int)($row['guest_count'] ?? 1),
-                'total_price' => (float)($row['total_price'] ?? 0),
-                'extra_services' => $this->decodeExtraServices($row['extra_services'] ?? null),
-                'created_at' => $row['created_at'],
-                'user' => [
-                    'id' => (int)$row['user_id'],
-                    'name' => $row['name'],
+                'guest_count'  => (int)($row['guest_count']  ?? 1),
+                'total_price'  => (float)($row['total_price'] ?? 0),
+                'created_at'   => $row['created_at'],
+                'user'         => [
+                    'id'    => (int)$row['user_id'],
+                    'name'  => $row['name'],
                     'email' => $row['email']
                 ],
-                'event' => [
-                    'id' => (int)$row['event_id'],
-                    'title' => $row['title'],
-                    'date' => $row['date'],
+                'event'        => [
+                    'id'       => (int)$row['event_id'],
+                    'title'    => $row['title'],
+                    'date'     => $row['date'],
                     'location' => $row['location'],
-                    'price' => (float)$row['price']
+                    'price'    => (float)$row['price']
                 ]
             ];
         }
@@ -202,14 +189,11 @@ class Booking
         return $bookings;
     }
 
+    // Decode JSON-encoded extra services
     private function decodeExtraServices($value)
     {
-        if (!$value) {
-            return [];
-        }
-
+        if (!$value) return [];
         $decoded = json_decode($value, true);
-
         return is_array($decoded) ? $decoded : [];
     }
 }

@@ -1,3 +1,5 @@
+// admin/AdminDashboard.js — Admin overview with stats, events, and recent bookings
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../../components/AppShell";
@@ -47,8 +49,11 @@ function AdminDashboard() {
   const pastEvents   = events.filter((e) => e.date < today);
   const recentBk     = [...bookings].slice(0, 5);
 
-  // Revenue = sum of event prices across all bookings
-  const totalRevenue = bookings.reduce((sum, b) => sum + (Number(b.total_price) || Number(b.event?.price) || 0), 0);
+  // Revenue = sum of total_price (or event price as fallback) across all bookings
+  const totalRevenue = bookings.reduce(
+    (sum, b) => sum + (Number(b.total_price) || Number(b.event?.price) || 0),
+    0
+  );
 
   // Unique users who booked
   const uniqueUsers = new Set(bookings.map((b) => b.user?.email)).size;
@@ -56,19 +61,19 @@ function AdminDashboard() {
   return (
     <AppShell subtitle="Full overview of your platform — events, bookings, revenue and activity." title="Admin Dashboard">
 
-      {error ? <p className="message message-error">{error}</p> : null}
-      {loading ? <p className="message">Loading dashboard...</p> : null}
+      {error   ? <p className="message message-error">{error}</p>   : null}
+      {loading ? <p className="message">Loading dashboard...</p>    : null}
 
-      {/* ── Stats ── */}
+      {/* Stats */}
       <section className="stats-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
-        <StatCard label="Total Events"   value={events.length}   sub={`${activeEvents.length} active`}  accent="#2563eb" />
-        <StatCard label="Active Events"  value={activeEvents.length} sub="upcoming"                     accent="#0f766e" />
-        <StatCard label="Past Events"    value={pastEvents.length}   sub="completed"                    accent="#b45309" />
-        <StatCard label="Total Bookings" value={bookings.length}  sub={`${uniqueUsers} unique users`}   accent="#7c3aed" />
-        <StatCard label="Total Revenue"  value={`Rs. ${totalRevenue.toLocaleString()}`} sub="from bookings" accent="#be185d" />
+        <StatCard label="Total Events"   value={events.length}          sub={`${activeEvents.length} active`}  accent="#2563eb" />
+        <StatCard label="Active Events"  value={activeEvents.length}    sub="upcoming"                         accent="#0f766e" />
+        <StatCard label="Past Events"    value={pastEvents.length}      sub="completed"                        accent="#b45309" />
+        <StatCard label="Total Bookings" value={bookings.length}        sub={`${uniqueUsers} unique users`}    accent="#7c3aed" />
+        <StatCard label="Total Revenue"  value={`Rs. ${totalRevenue.toLocaleString()}`} sub="from bookings"   accent="#be185d" />
       </section>
 
-      {/* ── Quick links ── */}
+      {/* Quick links */}
       <section className="card-grid">
         <article className="panel">
           <p className="eyebrow">Catalog</p>
@@ -90,7 +95,7 @@ function AdminDashboard() {
         </article>
       </section>
 
-      {/* ── Events status table ── */}
+      {/* Events status table */}
       <section className="panel">
         <div className="section-heading">
           <div><p className="eyebrow">Venue status</p><h2>Events Overview</h2></div>
@@ -130,7 +135,7 @@ function AdminDashboard() {
         )}
       </section>
 
-      {/* ── Recent bookings ── */}
+      {/* Recent bookings */}
       <section className="panel">
         <div className="section-heading">
           <div><p className="eyebrow">Recent activity</p><h2>Latest Bookings</h2></div>

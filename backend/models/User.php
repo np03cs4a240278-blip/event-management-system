@@ -14,7 +14,6 @@ class User
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
         $stmt->execute(['email' => $email]);
-
         return $stmt->fetch() ?: null;
     }
 
@@ -23,15 +22,14 @@ class User
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
         $stmt->execute(['id' => $id]);
-
         return $stmt->fetch() ?: null;
     }
 
+    // Get all users (admin use)
     public function allPublicUsers()
     {
         $stmt = $this->db->query("SELECT * FROM users ORDER BY created_at DESC, id DESC");
         $users = $stmt->fetchAll() ?: [];
-
         return array_map([$this, 'toPublicUser'], $users);
     }
 
@@ -39,17 +37,15 @@ class User
     public function create($name, $email, $password, $role = 'user')
     {
         $stmt = $this->db->prepare(
-            "INSERT INTO users (name, email, password, role) 
+            "INSERT INTO users (name, email, password, role)
              VALUES (:name, :email, :password, :role)"
         );
-
         $stmt->execute([
-            'name' => $name,
-            'email' => $email,
+            'name'     => $name,
+            'email'    => $email,
             'password' => $password,
-            'role' => $role
+            'role'     => $role
         ]);
-
         return $this->findById($this->db->lastInsertId());
     }
 
@@ -59,11 +55,7 @@ class User
         $stmt = $this->db->prepare(
             "UPDATE users SET password = :password WHERE email = :email"
         );
-
-        return $stmt->execute([
-            'email' => $email,
-            'password' => $password
-        ]);
+        return $stmt->execute(['email' => $email, 'password' => $password]);
     }
 
     // Update password by user ID
@@ -72,11 +64,7 @@ class User
         $stmt = $this->db->prepare(
             "UPDATE users SET password = :password WHERE id = :id"
         );
-
-        return $stmt->execute([
-            'id' => $id,
-            'password' => $password
-        ]);
+        return $stmt->execute(['id' => $id, 'password' => $password]);
     }
 
     // Set must_change_password by email
@@ -85,11 +73,7 @@ class User
         $stmt = $this->db->prepare(
             "UPDATE users SET must_change_password = :value WHERE email = :email"
         );
-
-        return $stmt->execute([
-            'email' => $email,
-            'value' => $value ? 1 : 0
-        ]);
+        return $stmt->execute(['email' => $email, 'value' => $value ? 1 : 0]);
     }
 
     // Set must_change_password by user ID
@@ -98,23 +82,19 @@ class User
         $stmt = $this->db->prepare(
             "UPDATE users SET must_change_password = :value WHERE id = :id"
         );
-
-        return $stmt->execute([
-            'id' => $id,
-            'value' => $value ? 1 : 0
-        ]);
+        return $stmt->execute(['id' => $id, 'value' => $value ? 1 : 0]);
     }
 
     // Return safe user data (without password)
     public function toPublicUser($user)
     {
         return [
-            'id' => (int)$user['id'],
-            'name' => $user['name'],
-            'email' => $user['email'],
-            'role' => $user['role'],
+            'id'                   => (int)$user['id'],
+            'name'                 => $user['name'],
+            'email'                => $user['email'],
+            'role'                 => $user['role'],
             'must_change_password' => (bool)($user['must_change_password'] ?? 0),
-            'created_at' => $user['created_at'] ?? null
+            'created_at'           => $user['created_at'] ?? null
         ];
     }
 }

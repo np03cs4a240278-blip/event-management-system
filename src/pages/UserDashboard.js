@@ -18,12 +18,9 @@ export default function UserDashboard() {
   const [bookings, setBookings] = useState([]);
   const [error, setError]       = useState("");
 
-  // Load events and bookings from the backend when page opens
   useEffect(() => {
     const loadData = async () => {
       try {
-        // GET /api/events — all available events
-        // GET /api/my-bookings — this user's bookings
         const [eventsRes, bookingsRes] = await Promise.all([
           API.get("/events"),
           API.get("/my-bookings"),
@@ -51,7 +48,11 @@ export default function UserDashboard() {
 
       <div className="dash-content">
 
-        {error && <div style={{ background: "#FEE2E2", color: "#B91C1C", padding: "10px 14px", borderRadius: 8, marginBottom: 20 }}>{error}</div>}
+        {error && (
+          <div style={{ background: "#FEE2E2", color: "#B91C1C", padding: "10px 14px", borderRadius: 8, marginBottom: 20 }}>
+            {error}
+          </div>
+        )}
 
         {/* Stats */}
         <div className="dash-stats-row">

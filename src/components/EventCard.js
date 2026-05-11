@@ -1,5 +1,9 @@
+// EventCard.js — Displays a single event with booking and review actions
+// Shows: image, date, price, title, description, location, rating, actions
+
 import { useEffect, useState } from "react";
 import { formatDate, formatPrice } from "../utils/formatters";
+import "../styles/eventcard.css";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80";
@@ -22,17 +26,31 @@ function MiniStars({ rating }) {
   return (
     <span className="event-card__stars">
       {[1, 2, 3, 4, 5].map((s) => (
-        <span key={s} style={{ color: s <= Math.round(rating) ? "#FBBF24" : "#D1D5DB", fontSize: 13 }}>★</span>
+        <span
+          key={s}
+          style={{ color: s <= Math.round(rating) ? "#FBBF24" : "#D1D5DB", fontSize: 13 }}
+        >
+          ★
+        </span>
       ))}
     </span>
   );
 }
 
+/**
+ * Props:
+ *  - event: object
+ *  - onBook: (event) => void
+ *  - isBooking: boolean
+ *  - alreadyBooked: boolean
+ *  - onToggleReviews: (eventId) => void  (optional)
+ *  - reviewsOpen: boolean                (optional)
+ */
 function EventCard({ event, onBook, isBooking, alreadyBooked, onToggleReviews, reviewsOpen }) {
   const imageSource = event.image?.trim() ? event.image : FALLBACK_IMAGE;
   const [ratingInfo, setRatingInfo] = useState(() => getStoredAvg(event.id));
 
-  // refresh rating when the review panel closes (new review may have been added)
+  // Refresh rating when the review panel closes (new review may have been added)
   useEffect(() => {
     if (!reviewsOpen) {
       setRatingInfo(getStoredAvg(event.id));
@@ -74,13 +92,15 @@ function EventCard({ event, onBook, isBooking, alreadyBooked, onToggleReviews, r
             {alreadyBooked ? "Booked" : isBooking ? "Booking..." : "Book Event"}
           </button>
 
-          <button
-            className={`event-card__review-btn ${reviewsOpen ? "event-card__review-btn--active" : ""}`}
-            onClick={() => onToggleReviews(event.id)}
-            type="button"
-          >
-            {reviewsOpen ? "Hide Reviews" : "★ Reviews"}
-          </button>
+          {onToggleReviews && (
+            <button
+              className={`event-card__review-btn ${reviewsOpen ? "event-card__review-btn--active" : ""}`}
+              onClick={() => onToggleReviews(event.id)}
+              type="button"
+            >
+              {reviewsOpen ? "Hide Reviews" : "★ Reviews"}
+            </button>
+          )}
         </div>
       </div>
     </article>

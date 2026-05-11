@@ -16,6 +16,7 @@ const PROJECT_FOLDER_CANDIDATES = [
   process.env.REACT_APP_API_PROJECT_FOLDER,
 ].filter(Boolean);
 
+// Build a list of candidate base URLs to try (handles different dev setups)
 const API_BASE_URL_CANDIDATES = Array.from(
   new Set(
     [
@@ -35,6 +36,7 @@ const API = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Auto-retry with next candidate URL on 404 (handles different server setups)
 API.interceptors.response.use(
   (response) => {
     const resolvedBaseUrl = normalizeUrl(response.config.baseURL || API.defaults.baseURL);
@@ -47,19 +49,15 @@ API.interceptors.response.use(
     const config = error?.config;
     const status = error?.response?.status;
 
-    if (!config || status !== 404) {
-      return Promise.reject(error);
-    }
+    if (!config || status !== 404) return Promise.reject(error);
 
     const currentBaseUrl = normalizeUrl(config.baseURL || API.defaults.baseURL || "");
-    const triedBaseUrls = config._triedBaseUrls || [currentBaseUrl];
-    const nextBaseUrl = API_BASE_URL_CANDIDATES.find(
+    const triedBaseUrls  = config._triedBaseUrls || [currentBaseUrl];
+    const nextBaseUrl    = API_BASE_URL_CANDIDATES.find(
       (candidate) => !triedBaseUrls.includes(candidate)
     );
 
-    if (!nextBaseUrl) {
-      return Promise.reject(error);
-    }
+    if (!nextBaseUrl) return Promise.reject(error);
 
     return API.request({
       ...config,

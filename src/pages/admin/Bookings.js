@@ -1,23 +1,24 @@
+// admin/Bookings.js — Admin view of all bookings
+// Allows confirming, adding notes, and deleting bookings.
+
 import { useEffect, useState } from "react";
 import AppShell from "../../components/AppShell";
 import API from "../../services/api";
 import { getErrorMessage } from "../../utils/apiError";
 import { formatDate, formatPrice } from "../../utils/formatters";
 
-// Booking statuses are managed on the frontend only
-// (backend doesn't have a status column — extend schema to persist)
 const STATUS = { PENDING: "pending", CONFIRMED: "confirmed", CANCELLED: "cancelled" };
 const STATUS_LABEL = {
-  [STATUS.PENDING]: "Pending",
+  [STATUS.PENDING]:   "Pending",
   [STATUS.CONFIRMED]: "Confirmed",
   [STATUS.CANCELLED]: "Cancelled",
 };
 
 function BookingRow({ booking, onDelete, onConfirm }) {
-  const [review, setReview]     = useState(booking.admin_note || "");
-  const [editing, setEditing]   = useState(false);
-  const [saving, setSaving]     = useState(false);
-  const status                  = booking.status || STATUS.PENDING;
+  const [review, setReview]   = useState(booking.admin_note || "");
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving]   = useState(false);
+  const status                = booking.status || STATUS.PENDING;
 
   useEffect(() => {
     setReview(booking.admin_note || "");
@@ -42,7 +43,7 @@ function BookingRow({ booking, onDelete, onConfirm }) {
     [STATUS.PENDING]:   { background: "#fef3c7", color: "#92400e" },
     [STATUS.CONFIRMED]: { background: "#d1fae5", color: "#065f46" },
     [STATUS.CANCELLED]: { background: "#fee2e2", color: "#b91c1c" },
-  }[status];
+  }[status] || { background: "#fef3c7", color: "#92400e" };
 
   return (
     <article className="admin-booking-row">

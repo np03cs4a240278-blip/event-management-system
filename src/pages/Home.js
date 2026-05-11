@@ -1,4 +1,4 @@
-// Home.js — Public landing page
+// Home.js — Public landing page with contact form
 
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -11,10 +11,12 @@ import "./theme.css";
 export default function Home() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [contactName, setContactName] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
+
+  // Contact form state
+  const [contactName, setContactName]       = useState("");
+  const [contactEmail, setContactEmail]     = useState("");
   const [contactMessage, setContactMessage] = useState("");
-  const [contactError, setContactError] = useState("");
+  const [contactError, setContactError]     = useState("");
   const [contactSuccess, setContactSuccess] = useState("");
   const [submittingContact, setSubmittingContact] = useState(false);
 
@@ -22,27 +24,21 @@ export default function Home() {
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
-
     if (!contactName.trim() || !contactEmail.trim() || !contactMessage.trim()) {
       setContactError("Please fill in your name, email, and message.");
       setContactSuccess("");
       return;
     }
-
     setSubmittingContact(true);
     setContactError("");
     setContactSuccess("");
-
     try {
       await API.post("/contact-messages", {
-        name: contactName,
-        email: contactEmail,
+        name:    contactName,
+        email:   contactEmail,
         message: contactMessage,
       });
-
-      setContactName("");
-      setContactEmail("");
-      setContactMessage("");
+      setContactName(""); setContactEmail(""); setContactMessage("");
       setContactSuccess("Your message has been sent successfully.");
     } catch (requestError) {
       setContactError(getErrorMessage(requestError, "Could not send your message."));
@@ -130,33 +126,12 @@ export default function Home() {
       <section className="home-section" id="contact">
         <h2 className="home-section-title">Contact Us</h2>
         <p className="home-section-sub">Have questions? Send us a message.</p>
-        {contactError && <div className="home-contact-message home-contact-message--error">{contactError}</div>}
+        {contactError   && <div className="home-contact-message home-contact-message--error">{contactError}</div>}
         {contactSuccess && <div className="home-contact-message home-contact-message--success">{contactSuccess}</div>}
         <form className="home-contact-form" onSubmit={handleContactSubmit}>
-          <input
-            type="text"
-            placeholder="Your Name"
-            className="home-contact-input"
-            value={contactName}
-            onChange={(e) => setContactName(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Your Email"
-            className="home-contact-input"
-            value={contactEmail}
-            onChange={(e) => setContactEmail(e.target.value)}
-            required
-          />
-          <textarea
-            placeholder="Your Message"
-            className="home-contact-input"
-            rows={4}
-            value={contactMessage}
-            onChange={(e) => setContactMessage(e.target.value)}
-            required
-          />
+          <input type="text"  placeholder="Your Name"    className="home-contact-input" value={contactName}    onChange={(e) => setContactName(e.target.value)}    required />
+          <input type="email" placeholder="Your Email"   className="home-contact-input" value={contactEmail}   onChange={(e) => setContactEmail(e.target.value)}   required />
+          <textarea           placeholder="Your Message" className="home-contact-input" rows={4}               value={contactMessage} onChange={(e) => setContactMessage(e.target.value)} required />
           <button type="submit" className="home-contact-btn" disabled={submittingContact}>
             {submittingContact ? "Sending..." : "Send Message"}
           </button>

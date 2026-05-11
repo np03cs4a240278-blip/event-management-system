@@ -1,4 +1,4 @@
-/* eventcard.css */
+/* eventcard.css — Event card component styles */
 
 .event-card {
   background: #fff;
@@ -72,7 +72,7 @@
   font-style: italic;
 }
 .event-card__stars { display: inline-flex; gap: 1px; }
-.event-card__rating-num  { font-weight: 700; color: #1E1B4B; font-size: 13px; }
+.event-card__rating-num   { font-weight: 700; color: #1E1B4B; font-size: 13px; }
 .event-card__rating-count { color: #9CA3AF; font-size: 12px; }
 
 /* Action row */

@@ -1,9 +1,9 @@
+// Profile.js — User/Admin profile page with password change
+
 import { useState } from "react";
+import AppShell from "../components/AppShell";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/apiError";
-import Navbar from "./Navbar";
-import "./theme.css";
-import "./DashboardShared.css";
 
 function Profile() {
   const { user, changePassword } = useAuth();
@@ -33,13 +33,11 @@ function Profile() {
     setFeedback({ type: "", text: "" });
     try {
       const res = await changePassword({
-        current_password: currentPassword,
-        new_password: newPassword,
-        confirm_password: confirmPassword,
+        current_password:  currentPassword,
+        new_password:      newPassword,
+        confirm_password:  confirmPassword,
       });
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+      setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
       setFeedback({ type: "success", text: res.message || "Password changed successfully." });
     } catch (err) {
       setFeedback({ type: "error", text: getErrorMessage(err, "Could not change password.") });
@@ -48,21 +46,15 @@ function Profile() {
     }
   };
 
-  // Avatar initials
   const initials = user?.name
     ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()
     : "?";
 
   return (
-    <div className="dash-page">
-      <Navbar />
-
-      <div className="dash-hero theme-header">
-        <h1 className="dash-hero-title">Profile</h1>
-        <p className="dash-hero-sub">{isAdmin ? "Manage your admin account and credentials." : "View your account and update your password."}</p>
-      </div>
-
-      <div className="dash-content">
+    <AppShell
+      title="Profile"
+      subtitle={isAdmin ? "Manage your admin account and credentials." : "View your account and update your password."}
+    >
       {user?.must_change_password ? (
         <p className="message message-error">
           You are using a temporary password. Please change it now before using other pages.
@@ -75,9 +67,8 @@ function Profile() {
         </p>
       ) : null}
 
-      {/* ── Profile card ── */}
+      {/* Profile card */}
       <section className="panel" style={{ display: "flex", gap: "1.5rem", alignItems: "center", flexWrap: "wrap" }}>
-        {/* Avatar */}
         <div style={{
           width: 80, height: 80, borderRadius: "50%", flexShrink: 0,
           background: isAdmin
@@ -89,7 +80,6 @@ function Profile() {
           {initials}
         </div>
 
-        {/* Info */}
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap", marginBottom: 8 }}>
             <h2 style={{ margin: 0 }}>{user?.name}</h2>
@@ -122,7 +112,7 @@ function Profile() {
         </div>
       </section>
 
-      {/* ── Admin permissions card (admin only) ── */}
+      {/* Admin permissions card */}
       {isAdmin ? (
         <section className="card-grid">
           <article className="panel">
@@ -149,7 +139,7 @@ function Profile() {
         </section>
       ) : null}
 
-      {/* ── Change password ── */}
+      {/* Change password */}
       <section className="panel">
         <div className="section-heading">
           <div>
@@ -205,8 +195,8 @@ function Profile() {
           </div>
         </form>
       </section>
-      </div>
-    </div>
+
+    </AppShell>
   );
 }
 

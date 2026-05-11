@@ -3,17 +3,17 @@ import { useAuth } from "../context/AuthContext";
 
 const linksByRole = {
   user: [
-    { to: "/user-dashboard", label: "Dashboard" },
-    { to: "/events", label: "Events" },
-    { to: "/bookings", label: "My Bookings" },
-    { to: "/profile", label: "Profile" },
+    { to: "/user-dashboard", label: "🏠 Dashboard" },
+    { to: "/events",         label: "🎉 Events" },
+    { to: "/bookings",       label: "📋 My Bookings" },
+    { to: "/profile",        label: "👤 Profile" },
   ],
   admin: [
-    { to: "/admin/dashboard", label: "Dashboard" },
-    { to: "/admin/events", label: "Manage Events" },
-    { to: "/admin/bookings", label: "All Bookings" },
-    { to: "/admin/users", label: "Users" },
-    { to: "/profile", label: "Profile" },
+    { to: "/admin/dashboard", label: "🏠 Dashboard" },
+    { to: "/admin/events",    label: "🎉 Manage Events" },
+    { to: "/admin/bookings",  label: "📋 All Bookings" },
+    { to: "/admin/users",     label: "👥 Users" },
+    { to: "/profile",         label: "👤 Profile" },
   ],
 };
 
@@ -48,7 +48,11 @@ function Sidebar() {
         ))}
       </nav>
 
-      <button className="button button-secondary sidebar__logout" onClick={handleLogout} type="button">
+      <button
+        className="button button-secondary sidebar__logout"
+        onClick={handleLogout}
+        type="button"
+      >
         Logout
       </button>
     </aside>

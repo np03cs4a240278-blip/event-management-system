@@ -20,62 +20,41 @@ function isPrivateOrLoopbackAddress($host)
 function getAllowedOrigins()
 {
     $rawOrigins = getenv('ALLOWED_ORIGINS') ?: '';
-
-    if ($rawOrigins === '') {
-        return [];
-    }
-
+    if ($rawOrigins === '') return [];
     return array_values(array_filter(array_map('trim', explode(',', $rawOrigins))));
 }
 
 function isAllowedFrontendOrigin($origin)
 {
-    if ($origin === '') {
-        return false;
-    }
+    if ($origin === '') return false;
 
-    if (in_array($origin, getAllowedOrigins(), true)) {
-        return true;
-    }
+    if (in_array($origin, getAllowedOrigins(), true)) return true;
 
     $parts = parse_url($origin);
-
-    if (!$parts || empty($parts['scheme']) || empty($parts['host'])) {
-        return false;
-    }
-
-    if (!in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
-        return false;
-    }
+    if (!$parts || empty($parts['scheme']) || empty($parts['host'])) return false;
+    if (!in_array(strtolower($parts['scheme']), ['http', 'https'], true)) return false;
 
     $host = strtolower($parts['host']);
 
-    if (in_array($host, ['localhost', '127.0.0.1', '::1'], true)) {
-        return true;
-    }
-
-    if (substr($host, -6) === '.local') {
-        return true;
-    }
-
-    if (isPrivateOrLoopbackAddress($host)) {
-        return true;
-    }
+    if (in_array($host, ['localhost', '127.0.0.1', '::1'], true)) return true;
+    if (substr($host, -6) === '.local') return true;
+    if (isPrivateOrLoopbackAddress($host)) return true;
 
     $serverHostHeader = $_SERVER['HTTP_HOST'] ?? '';
-    $serverHost = strtolower(explode(':', $serverHostHeader)[0] ?? '');
+    $serverHost       = strtolower(explode(':', $serverHostHeader)[0] ?? '');
 
     return $serverHost !== '' && $host === $serverHost;
 }
 
+// Configure session cookie with secure defaults
 $sessionLifetime = (int)(getenv('SESSION_LIFETIME') ?: 86400);
 $isSecureRequest = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
 
 session_set_cookie_params([
     'lifetime' => $sessionLifetime,
-    'path' => '/',
-    'domain' => '',
-    'secure' => $isSecureRequest,
+    'path'     => '/',
+    'domain'   => '',
+    'secure'   => $isSecureRequest,
     'httponly' => true,
     'samesite' => 'Lax',
 ]);
@@ -98,7 +77,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
     exit;
 }
 
-// Load files
+// Load helpers, config, middleware, models, controllers, and routes
 require 'helpers/response.php';
 require 'config/db.php';
 require 'middleware/auth.php';
@@ -114,27 +93,24 @@ require 'controllers/ContactMessageController.php';
 require 'routes/api.php';
 
 try {
-    // Connect DB
     $db = getDatabaseConnection();
 
-    // Create objects
     $userModel = new User($db);
-    $auth = new AuthController($userModel);
-    $users = new UserController($userModel);
+    $auth      = new AuthController($userModel);
+    $users     = new UserController($userModel);
     $eventModel = new Event($db);
-    $event = new EventController($eventModel);
-    $booking = new BookingController(new Booking($db), $eventModel);
-    $contact = new ContactMessageController(new ContactMessage($db));
+    $event     = new EventController($eventModel);
+    $booking   = new BookingController(new Booking($db), $eventModel);
+    $contact   = new ContactMessageController(new ContactMessage($db));
 
-    // Get URL path
-    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    // Parse URL path
+    $path        = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $apiPosition = strpos($path, '/api');
 
     if ($apiPosition !== false) {
         $path = substr($path, $apiPosition);
     }
 
-    // Handle request
     handleApiRequest($_SERVER['REQUEST_METHOD'], $path, $auth, $users, $event, $booking, $contact);
 
 } catch (Exception $e) {

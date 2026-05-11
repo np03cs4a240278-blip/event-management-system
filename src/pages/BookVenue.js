@@ -1,3 +1,6 @@
+// BookVenue.js — Multi-step booking form with live price calculation
+// Allows users to select a venue, event type, package, date, guests, and extra services.
+
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CheckCircleOutlined, EnvironmentOutlined } from "@ant-design/icons";
@@ -16,12 +19,10 @@ import {
   message,
 } from "antd";
 import dayjs from "dayjs";
+import AppShell from "../components/AppShell";
 import API from "../services/api";
 import { getErrorMessage } from "../utils/apiError";
 import { formatPrice } from "../utils/formatters";
-import Navbar from "./Navbar";
-import "./theme.css";
-import "./DashboardShared.css";
 
 const formatFormDate = (value) =>
   value?.format ? value.format("YYYY-MM-DD") : value || "";
@@ -60,13 +61,13 @@ const packagesByType = {
 const timeSlots = ["Morning", "Afternoon", "Evening", "Full Day"];
 
 const extraServices = [
-  { id: "decorations", name: "Decorations",                price: 15000 },
-  { id: "catering",    name: "Catering",                   price: 50000 },
-  { id: "dj",          name: "DJ & Music",                 price: 20000 },
-  { id: "photography", name: "Photography & Videography",  price: 25000 },
-  { id: "makeup",      name: "Makeup & Beauty",            price: 10000 },
-  { id: "host",        name: "Event Host (MC)",            price: 8000  },
-  { id: "other",       name: "Other Services",             price: 12000 },
+  { id: "decorations", name: "Decorations",               price: 15000 },
+  { id: "catering",    name: "Catering",                  price: 50000 },
+  { id: "dj",          name: "DJ & Music",                price: 20000 },
+  { id: "photography", name: "Photography & Videography", price: 25000 },
+  { id: "makeup",      name: "Makeup & Beauty",           price: 10000 },
+  { id: "host",        name: "Event Host (MC)",           price: 8000  },
+  { id: "other",       name: "Other Services",            price: 12000 },
 ];
 
 const GUEST_PRICE = 200;
@@ -76,27 +77,26 @@ export default function BookVenue() {
   const location = useLocation();
   const [form]   = Form.useForm();
 
-  const [events, setEvents]                   = useState([]);
-  const [bookedIds, setBookedIds]             = useState(new Set());
-  const [selectedEvent, setSelectedEvent]     = useState(null);
-  const [selectedType, setSelectedType]       = useState("Bratabandha");
-  const [selectedPackage, setSelectedPackage] = useState(null);
-  const [guestCount, setGuestCount]           = useState(10);
+  const [events, setEvents]                     = useState([]);
+  const [bookedIds, setBookedIds]               = useState(new Set());
+  const [selectedEvent, setSelectedEvent]       = useState(null);
+  const [selectedType, setSelectedType]         = useState("Bratabandha");
+  const [selectedPackage, setSelectedPackage]   = useState(null);
+  const [guestCount, setGuestCount]             = useState(10);
   const [selectedServices, setSelectedServices] = useState([]);
-  const [specialRequest, setSpecialRequest]   = useState("");
-  const [loading, setLoading]                 = useState(false);
-  const [error, setError]                     = useState("");
+  const [specialRequest, setSpecialRequest]     = useState("");
+  const [loading, setLoading]                   = useState(false);
+  const [error, setError]                       = useState("");
 
+  // Load events and already-booked IDs on mount
   useEffect(() => {
     let isActive = true;
-
     const loadData = async () => {
       try {
         const [eventsResponse, bookingsResponse] = await Promise.all([
           API.get("/events"),
           API.get("/my-bookings"),
         ]);
-
         if (!isActive) return;
 
         const loadedEvents = eventsResponse.data.events ?? [];
@@ -109,6 +109,7 @@ export default function BookVenue() {
         setEvents(loadedEvents);
         setBookedIds(ids);
 
+        // Pre-select event if navigated from Events page
         const presetEvent = location.state?.eventId
           ? loadedEvents.find((event) => event.id === location.state.eventId)
           : loadedEvents[0];
@@ -118,21 +119,19 @@ export default function BookVenue() {
           form.setFieldValue("eventId", presetEvent.id);
         }
       } catch (requestError) {
-        if (isActive) {
-          setError(getErrorMessage(requestError, "Could not load booking options."));
-        }
+        if (isActive) setError(getErrorMessage(requestError, "Could not load booking options."));
       }
     };
-
     loadData();
     return () => { isActive = false; };
   }, [form, location.state]);
 
+  // Reset package when event type changes
   useEffect(() => {
     const defaultPackage = packagesByType[selectedType]?.[0] ?? null;
     setSelectedPackage(defaultPackage);
     form.setFieldsValue({
-      eventType: selectedType,
+      eventType:    selectedType,
       eventPackage: defaultPackage?.label,
     });
   }, [selectedType, form]);
@@ -141,6 +140,7 @@ export default function BookVenue() {
     form.setFieldValue("guestCount", guestCount);
   }, [form, guestCount]);
 
+  // Live price calculation
   const guestCost   = guestCount * GUEST_PRICE;
   const packageCost = selectedPackage?.price ?? 0;
   const extrasCost  = selectedServices.reduce((total, id) => {
@@ -166,31 +166,31 @@ export default function BookVenue() {
   };
 
   const handleSubmit = async (values) => {
-    if (!selectedEvent)  { message.warning("Please select a venue."); return; }
-    if (alreadyBooked)   { message.warning("You already booked this event."); return; }
+    if (!selectedEvent) { message.warning("Please select a venue."); return; }
+    if (alreadyBooked)  { message.warning("You already booked this event."); return; }
 
     setLoading(true);
     setError("");
     try {
       await API.post("/bookings", {
-        event_id: selectedEvent.id,
-        event_type: values.eventType || selectedType,
-        package_name: selectedPackage?.label || values.eventPackage || "",
-        start_date: formatFormDate(values.startDate),
-        end_date: formatFormDate(values.endDate),
-        event_date: formatFormDate(values.eventDate),
-        time_slot: values.timeSlot || "",
-        guest_count: guestCount,
+        event_id:        selectedEvent.id,
+        event_type:      values.eventType || selectedType,
+        package_name:    selectedPackage?.label || values.eventPackage || "",
+        start_date:      formatFormDate(values.startDate),
+        end_date:        formatFormDate(values.endDate),
+        event_date:      formatFormDate(values.eventDate),
+        time_slot:       values.timeSlot || "",
+        guest_count:     guestCount,
         special_request: specialRequest.trim(),
-        extra_services: selectedServiceItems.map((service) => ({
-          id: service.id,
-          name: service.name,
+        extra_services:  selectedServiceItems.map((service) => ({
+          id:    service.id,
+          name:  service.name,
           price: service.price,
         })),
-        package_price: packageCost,
-        guest_price: guestCost,
-        services_price: extrasCost,
-        total_price: totalPrice,
+        package_price:   packageCost,
+        guest_price:     guestCost,
+        services_price:  extrasCost,
+        total_price:     totalPrice,
       });
       setBookedIds((current) => new Set([...current, selectedEvent.id]));
       message.success(`Booking confirmed for "${selectedEvent.title}".`);
@@ -203,20 +203,15 @@ export default function BookVenue() {
   };
 
   return (
-    <div className="dash-page">
-      <Navbar />
+    <AppShell
+      title="Bookings"
+      subtitle="Select your event setup, add optional services, and confirm from one polished booking flow."
+    >
+      {error ? <Alert message={error} showIcon style={{ borderRadius: 16, marginBottom: 20 }} type="error" /> : null}
 
-      <div className="dash-hero theme-header">
-        <h1 className="dash-hero-title">Bookings</h1>
-        <p className="dash-hero-sub">Select your event setup, add optional services, and confirm from one polished booking flow.</p>
-      </div>
+      <section className="booking-layout">
 
-      <div className="dash-content">
-        {error ? <Alert message={error} showIcon style={{ borderRadius: 16, marginBottom: 20 }} type="error" /> : null}
-
-        <section className="booking-layout">
-
-        {/* ── LEFT: Main form ── */}
+        {/* LEFT: Main form */}
         <Card className="booking-card booking-card--form">
           <Form form={form} layout="vertical" onFinish={handleSubmit}>
 
@@ -356,7 +351,7 @@ export default function BookVenue() {
           </Form>
         </Card>
 
-        {/* ── RIGHT: Summary sidebar ── */}
+        {/* RIGHT: Summary sidebar */}
         <div className="booking-sidebar">
 
           <Card className="booking-card" title="Booking Summary">
@@ -423,10 +418,10 @@ export default function BookVenue() {
           </Card>
 
         </div>
-        </section>
+      </section>
 
-      {/* ── Extra Services ── */}
-        <Card className="booking-card booking-card--services" title="Extra Services (Optional)">
+      {/* Extra Services */}
+      <Card className="booking-card booking-card--services" title="Extra Services (Optional)">
         <p className="booking-services__copy">
           Customize your event by adding extra services. All are optional.
         </p>
@@ -454,8 +449,8 @@ export default function BookVenue() {
           <span>{selectedServices.length} service(s) selected</span>
           <strong>+ {formatPrice(extrasCost)}</strong>
         </div>
-        </Card>
-      </div>
-    </div>
+      </Card>
+
+    </AppShell>
   );
 }

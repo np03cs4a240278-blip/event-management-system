@@ -3,15 +3,15 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Public pages
-import Home       from "./pages/Home";
-import Login      from "./pages/Login";
-import Signup     from "./pages/Signup";
-import Register   from "./pages/Register";
+import Home         from "./pages/Home";
+import Login        from "./pages/Login";
+import Signup       from "./pages/Signup";
+import Register     from "./pages/Register";
 import FeedbackForm from "./components/FeedbackForm";
 
 // Dashboard pages (theme-styled, backend-connected)
-import UserDashboard  from "./pages/UserDashboard";
-import BookVenue      from "./pages/BookVenue";
+import UserDashboard from "./pages/UserDashboard";
+import BookVenue     from "./pages/BookVenue";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -19,8 +19,10 @@ import AdminBookings  from "./pages/admin/Bookings";
 import ManageEvents   from "./pages/admin/ManageEvents";
 import ManageUsers    from "./pages/admin/ManageUsers";
 import Profile        from "./pages/Profile";
-import UserBookings   from "./pages/user/Bookings";
-import Events         from "./pages/user/Events";
+
+// User pages
+import UserBookings from "./pages/user/Bookings";
+import Events       from "./pages/user/Events";
 
 function App() {
   return (

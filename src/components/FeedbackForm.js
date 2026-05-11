@@ -1,9 +1,13 @@
+// FeedbackForm.js — Event review/feedback component
+// Stores reviews in localStorage keyed by eventId.
+// Can be used standalone (/feedback route) or embedded inside the Events page.
+
 import { useEffect, useState } from "react";
 import "./FeedbackForm.css";
 
 const STAR_LABELS = ["Terrible", "Poor", "Okay", "Good", "Excellent"];
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+// ── localStorage helpers ──────────────────────────────────────────────────────
 
 function storageKey(eventId) {
   return `ems.reviews.${eventId}`;
@@ -82,19 +86,16 @@ function ReviewCard({ review }) {
 // ── main component ────────────────────────────────────────────────────────────
 
 /**
- * FeedbackForm
- *
  * Props:
  *   eventId   – unique identifier used as the localStorage key (required)
  *   eventName – display name shown in the header (optional)
  *   embedded  – when true, renders without the full-page wrapper / hero header
- *               (used when dropped inside the Events page)
  */
 export default function FeedbackForm({ eventId, eventName = "this event", embedded = false }) {
   const [reviews, setReviews] = useState(() => loadReviews(eventId));
   const [showForm, setShowForm] = useState(false);
 
-  // form state
+  // Form state
   const [name, setName]       = useState("");
   const [rating, setRating]   = useState(0);
   const [hovered, setHovered] = useState(0);
@@ -102,16 +103,17 @@ export default function FeedbackForm({ eventId, eventName = "this event", embedd
   const [error, setError]     = useState("");
   const [success, setSuccess] = useState(false);
 
-  // keep localStorage in sync whenever reviews change
+  // Keep localStorage in sync whenever reviews change
   useEffect(() => {
     saveReviews(eventId, reviews);
   }, [eventId, reviews]);
 
-  // reload if eventId changes (different event panel opened)
+  // Reload if eventId changes (different event panel opened)
   useEffect(() => {
     setReviews(loadReviews(eventId));
     setShowForm(false);
     resetForm();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId]);
 
   function resetForm() {
@@ -122,10 +124,10 @@ export default function FeedbackForm({ eventId, eventName = "this event", embedd
     e.preventDefault();
     setError("");
 
-    if (!name.trim())   { setError("Please enter your name."); return; }
-    if (rating === 0)   { setError("Please select a star rating."); return; }
-    if (!review.trim()) { setError("Please write your review."); return; }
-    if (review.length > 500) { setError("Review must be 500 characters or fewer."); return; }
+    if (!name.trim())          { setError("Please enter your name."); return; }
+    if (rating === 0)          { setError("Please select a star rating."); return; }
+    if (!review.trim())        { setError("Please write your review."); return; }
+    if (review.length > 500)   { setError("Review must be 500 characters or fewer."); return; }
 
     const newReview = {
       id:     Date.now(),
@@ -147,7 +149,7 @@ export default function FeedbackForm({ eventId, eventName = "this event", embedd
   const content = (
     <div className={embedded ? "fb-embedded" : "fb-container"}>
 
-      {/* ── Summary bar ── */}
+      {/* Summary bar */}
       <div className="fb-summary">
         <div className="fb-summary-score">
           <span className="fb-summary-num">{avg ?? "—"}</span>
@@ -168,16 +170,15 @@ export default function FeedbackForm({ eventId, eventName = "this event", embedd
         </button>
       </div>
 
-      {/* ── Success banner ── */}
+      {/* Success banner */}
       {success && (
         <div className="fb-success">✓ Thank you! Your review has been submitted.</div>
       )}
 
-      {/* ── Collapsible form ── */}
+      {/* Collapsible form */}
       {showForm && (
         <div className="fb-card">
           <h2 className="fb-card-title">Write a Review</h2>
-
           {error && <div className="fb-error">{error}</div>}
 
           <form onSubmit={handleSubmit}>
@@ -222,7 +223,7 @@ export default function FeedbackForm({ eventId, eventName = "this event", embedd
         </div>
       )}
 
-      {/* ── Reviews list ── */}
+      {/* Reviews list */}
       {reviews.length > 0 ? (
         <div className="fb-reviews">
           <h2 className="fb-reviews-title">
@@ -241,7 +242,7 @@ export default function FeedbackForm({ eventId, eventName = "this event", embedd
     </div>
   );
 
-  // standalone page mode (used by /feedback route)
+  // Standalone page mode (used by /feedback route)
   if (!embedded) {
     return (
       <div className="fb-page">
