@@ -1,5 +1,4 @@
-// Navbar.js — Shared navigation bar for dashboard pages (legacy, used by some pages)
-// The AppShell-based pages use components/Navbar.js instead.
+// Navbar.js — Shared navigation bar for dashboard pages
 
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";

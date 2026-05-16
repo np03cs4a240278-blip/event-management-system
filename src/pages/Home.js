@@ -12,7 +12,6 @@ export default function Home() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Contact form state
   const [contactName, setContactName]       = useState("");
   const [contactEmail, setContactEmail]     = useState("");
   const [contactMessage, setContactMessage] = useState("");
@@ -84,8 +83,10 @@ export default function Home() {
         <p className="home-hero-desc">
           Browse and book events easily. Simple, fast, and reliable event booking at your fingertips.
         </p>
-        <button className="home-hero-btn" onClick={() => navigate("/register")}>Get Started</button>
-        <button className="home-hero-btn-outline" onClick={() => navigate("/login")}>Login</button>
+        <div className="home-hero-actions">
+          <button className="home-hero-btn" onClick={() => navigate("/register")}>Get Started</button>
+          <button className="home-hero-btn-outline" onClick={() => navigate("/login")}>Login</button>
+        </div>
       </section>
 
       {/* ABOUT */}
@@ -101,12 +102,12 @@ export default function Home() {
       {/* EVENTS */}
       <section className="home-section" id="events">
         <h2 className="home-section-title">Sample Events</h2>
-        <p className="home-section-sub">A glimpse of what's available</p>
+        <p className="home-section-sub">A glimpse of what&apos;s available</p>
         <div className="home-cards-grid">
-          <div className="home-card"><h3 className="home-card-title">Tech Summit 2025</h3><p className="home-card-date">15 Feb 2025</p><p className="home-card-desc">Annual technology conference. Kathmandu.</p></div>
-          <div className="home-card"><h3 className="home-card-title">Music Festival</h3><p className="home-card-date">20 Mar 2025</p><p className="home-card-desc">Live music event. Pokhara.</p></div>
-          <div className="home-card"><h3 className="home-card-title">Business Expo</h3><p className="home-card-date">5 Apr 2025</p><p className="home-card-desc">Business networking event. Lalitpur.</p></div>
-          <div className="home-card"><h3 className="home-card-title">Cultural Program</h3><p className="home-card-date">10 May 2025</p><p className="home-card-desc">Cultural showcase. Bhaktapur.</p></div>
+          <div className="home-card"><h3 className="home-card-title">Tech Summit 2025</h3><p className="home-card-date">📅 15 Feb 2025</p><p className="home-card-desc">Annual technology conference. Kathmandu.</p></div>
+          <div className="home-card"><h3 className="home-card-title">Music Festival</h3><p className="home-card-date">📅 20 Mar 2025</p><p className="home-card-desc">Live music event. Pokhara.</p></div>
+          <div className="home-card"><h3 className="home-card-title">Business Expo</h3><p className="home-card-date">📅 5 Apr 2025</p><p className="home-card-desc">Business networking event. Lalitpur.</p></div>
+          <div className="home-card"><h3 className="home-card-title">Cultural Program</h3><p className="home-card-date">📅 10 May 2025</p><p className="home-card-desc">Cultural showcase. Bhaktapur.</p></div>
         </div>
       </section>
 
@@ -137,9 +138,9 @@ export default function Home() {
           </button>
         </form>
         <div className="home-contact-info">
-          <p>info@ems.com</p>
-          <p>+977 01-4XXXXXX</p>
-          <p>Kathmandu, Nepal</p>
+          <p>📧 info@ems.com</p>
+          <p>📞 +977 01-4XXXXXX</p>
+          <p>📍 Kathmandu, Nepal</p>
         </div>
       </section>
 
@@ -153,7 +154,7 @@ export default function Home() {
           <Link to="/login">Login</Link>
           <Link to="/register">Register</Link>
         </div>
-        <p className="home-footer-copy">2025 Event Management System. All rights reserved.</p>
+        <p className="home-footer-copy">© 2025 Event Management System. All rights reserved.</p>
       </footer>
 
     </div>

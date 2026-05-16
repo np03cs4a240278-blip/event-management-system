@@ -76,7 +76,7 @@ export function AuthProvider({ children }) {
     };
     restoreSession();
     return () => { isActive = false; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Login: send email + password to backend, get user back

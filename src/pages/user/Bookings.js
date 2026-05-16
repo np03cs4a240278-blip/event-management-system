@@ -1,35 +1,34 @@
-// Bookings.js — User's booking history with cancellation and status tracking
-// Features:
-//  - Color-coded status badges (Confirmed / Cancelled / Completed)
-//  - Past events automatically shown as "Completed"
-//  - Cancel button with confirmation modal
-//  - Cancelled bookings remain visible in history
-//  - Prevents cancellation of past/completed events
-
+// user/Bookings.js — User's booking list with cancel functionality
 import { useEffect, useState } from "react";
-import AppShell from "../../components/AppShell";
-import ConfirmModal from "../../components/ConfirmModal";
-import StatusBadge, { deriveStatus } from "../../components/StatusBadge";
+import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { getErrorMessage } from "../../utils/apiError";
 import { formatDate, formatPrice } from "../../utils/formatters";
-import "../../styles/bookings.css";
+import Navbar from "../Navbar";
+import "../theme.css";
+import "../DashboardShared.css";
+
+function StatusPill({ status }) {
+  const s = (status || "pending").toLowerCase();
+  const styles = { pending: { background: "#FEF3C7", color: "#92400E" }, confirmed: { background: "#D1FAE5", color: "#065F46" }, cancelled: { background: "#FEE2E2", color: "#B91C1C" } };
+  const icons  = { pending: "⏳", confirmed: "✅", cancelled: "❌" };
+  return (
+    <span style={{ ...(styles[s] || styles.pending), display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 700 }}>
+      {icons[s]} {s.charAt(0).toUpperCase() + s.slice(1)}
+    </span>
+  );
+}
 
 function Bookings() {
-  const [bookings, setBookings]           = useState([]);
-  const [loading, setLoading]             = useState(true);
-  const [error, setError]                 = useState("");
+  const navigate = useNavigate();
+  const [bookings, setBookings]             = useState([]);
+  const [loading, setLoading]               = useState(true);
+  const [error, setError]                   = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [cancelBookingId, setCancelBookingId] = useState(null);
 
-  // ID of the booking pending cancellation (drives the modal + loading state)
-  const [pendingCancelId, setPendingCancelId] = useState(null);
-  // ID currently being cancelled via API (disables the button)
-  const [cancellingId, setCancellingId]   = useState(null);
-
-  // Load bookings from backend
   const loadBookings = async () => {
     setLoading(true);
-    setError("");
     try {
       const response = await API.get("/my-bookings");
       setBookings(response.data.bookings ?? []);
@@ -42,170 +41,90 @@ function Bookings() {
 
   useEffect(() => { loadBookings(); }, []);
 
-  // User clicks "Cancel Booking" → open confirmation modal
-  const handleCancelClick = (bookingId) => {
-    setPendingCancelId(bookingId);
-  };
-
-  // User confirms cancellation in the modal
-  const handleConfirmCancel = async () => {
-    const bookingId = pendingCancelId;
-    setPendingCancelId(null);   // close modal
-    setCancellingId(bookingId); // show loading on button
-    setError("");
-    setSuccessMessage("");
-
+  const handleCancelBooking = async (bookingId) => {
+    if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+    setCancelBookingId(bookingId);
+    setError(""); setSuccessMessage("");
     try {
       await API.delete(`/bookings/${bookingId}`);
       setSuccessMessage("Booking cancelled successfully.");
-      // Reload to get updated statuses from backend
       await loadBookings();
     } catch (requestError) {
       setError(getErrorMessage(requestError, "Could not cancel your booking."));
     } finally {
-      setCancellingId(null);
+      setCancelBookingId(null);
     }
   };
 
-  // User dismisses the modal
-  const handleCancelModal = () => {
-    setPendingCancelId(null);
-  };
-
-  // Auto-dismiss success message after 4 seconds
-  useEffect(() => {
-    if (!successMessage) return;
-    const timer = setTimeout(() => setSuccessMessage(""), 4000);
-    return () => clearTimeout(timer);
-  }, [successMessage]);
+  const confirmed = bookings.filter((b) => b.status === "confirmed").length;
+  const pending   = bookings.filter((b) => !b.status || b.status === "pending").length;
 
   return (
-    <AppShell
-      title="My Bookings"
-      subtitle="Review every event you have reserved. Past events are marked as Completed."
-    >
-      {/* Confirmation modal */}
-      <ConfirmModal
-        isOpen={pendingCancelId !== null}
-        title="Cancel Booking?"
-        message="This will cancel your booking. The slot will be released and this action cannot be undone."
-        confirmLabel="Yes, Cancel Booking"
-        cancelLabel="Keep Booking"
-        onConfirm={handleConfirmCancel}
-        onCancel={handleCancelModal}
-        danger
-      />
+    <div className="dash-page">
+      <Navbar />
+      <div className="dash-hero theme-header">
+        <h1 className="dash-hero-title">My Bookings</h1>
+        <p className="dash-hero-sub">Review every event you have reserved so far.</p>
+      </div>
+      <div className="dash-content">
+        {error          && <div className="message message-error">⚠️ {error}</div>}
+        {successMessage && <div className="message message-success">✅ {successMessage}</div>}
 
-      {/* Feedback messages */}
-      {error && <p className="message message-error">{error}</p>}
-      {successMessage && <p className="message message-success">{successMessage}</p>}
+        {!loading && bookings.length > 0 && (
+          <div className="dash-stats-row" style={{ marginBottom: 24 }}>
+            <div className="theme-stat-card"><div className="stat-label">Total Bookings</div><div className="stat-number">{bookings.length}</div></div>
+            <div className="theme-stat-card"><div className="stat-label">Confirmed</div><div className="stat-number" style={{ color: "#065F46" }}>{confirmed}</div></div>
+            <div className="theme-stat-card"><div className="stat-label">Pending</div><div className="stat-number" style={{ color: "#92400E" }}>{pending}</div></div>
+          </div>
+        )}
 
-      {loading ? (
-        <section className="panel"><p>Loading bookings...</p></section>
-      ) : bookings.length === 0 ? (
-        <section className="empty-state">
-          <h3>No bookings yet</h3>
-          <p>Head to the Events page and book your first event.</p>
-        </section>
-      ) : (
-        <section className="bookings-grid">
-          {bookings.map((booking) => {
-            const status = deriveStatus(booking);
-            const isPast = status === "completed" || status === "cancelled";
-            const isCancelling = cancellingId === booking.id;
-
-            return (
-              <article className="booking-card-enhanced" key={booking.id}>
-                {/* Card header with status badge */}
-                <div className="booking-card-enhanced__header">
-                  <p className="booking-card-enhanced__eyebrow">
-                    Booked on {formatDate(booking.created_at?.slice(0, 10))}
-                  </p>
-                  <StatusBadge status={status} />
-                </div>
-
-                {/* Event image if available */}
+        {loading ? (
+          <div className="theme-card dash-empty"><p>Loading your bookings...</p></div>
+        ) : bookings.length === 0 ? (
+          <div className="theme-card dash-empty">
+            <span className="dash-empty-icon">🎟️</span>
+            <p>You have no bookings yet.</p>
+            <button className="theme-btn" onClick={() => navigate("/events")}>Browse Events</button>
+          </div>
+        ) : (
+          <div className="dash-bookings-grid">
+            {bookings.map((booking) => (
+              <div className="dash-booking-card theme-card" key={booking.id}>
                 {booking.event?.image && (
-                  <img
-                    alt={booking.event.title}
-                    className="booking-card-enhanced__image"
-                    src={booking.event.image}
-                  />
+                  <img src={booking.event.image} alt={booking.event.title}
+                    style={{ width: "100%", height: 130, objectFit: "cover", borderRadius: 10, marginBottom: 8 }}
+                    onError={(e) => { e.target.style.display = "none"; }} />
                 )}
-
-                {/* Event details */}
-                <div className="booking-card-enhanced__body">
-                  <h3 className="booking-card-enhanced__title">
-                    {booking.event?.title}
-                  </h3>
-                  {booking.event?.description && (
-                    <p className="booking-card-enhanced__desc">
-                      {booking.event.description}
-                    </p>
-                  )}
-
-                  {/* Meta rows */}
-                  <div className="booking-card-enhanced__meta">
-                    <div className="booking-card-enhanced__meta-row">
-                      <span className="booking-card-enhanced__meta-label">📅 Event Date</span>
-                      <span>{formatDate(booking.event_date || booking.event?.date)}</span>
-                    </div>
-                    <div className="booking-card-enhanced__meta-row">
-                      <span className="booking-card-enhanced__meta-label">📍 Location</span>
-                      <span>{booking.event?.location || "—"}</span>
-                    </div>
-                    <div className="booking-card-enhanced__meta-row">
-                      <span className="booking-card-enhanced__meta-label">👥 Guests</span>
-                      <span>{booking.guest_count ?? "—"}</span>
-                    </div>
-                    {booking.package_name && (
-                      <div className="booking-card-enhanced__meta-row">
-                        <span className="booking-card-enhanced__meta-label">📦 Package</span>
-                        <span>{booking.package_name}</span>
-                      </div>
-                    )}
-                    <div className="booking-card-enhanced__meta-row booking-card-enhanced__meta-row--total">
-                      <span className="booking-card-enhanced__meta-label">💰 Total</span>
-                      <span className="booking-card-enhanced__price">
-                        {formatPrice(booking.total_price || booking.event?.price)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Admin note if present */}
-                  {booking.admin_note && (
-                    <p className="booking-card-enhanced__note">
-                      📝 {booking.admin_note}
-                    </p>
-                  )}
-                </div>
-
-                {/* Cancel button — hidden for past/cancelled events */}
-                {!isPast && (
-                  <div className="booking-card-enhanced__footer">
-                    <button
-                      className="button button-danger booking-card-enhanced__cancel-btn"
-                      disabled={isCancelling}
-                      onClick={() => handleCancelClick(booking.id)}
-                      type="button"
-                    >
-                      {isCancelling ? "Cancelling..." : "Cancel Booking"}
-                    </button>
+                <div className="dash-booking-venue">{booking.event?.title}</div>
+                <div className="dash-booking-row"><span className="dash-booking-label">📅 Event Date</span><span>{formatDate(booking.event?.date)}</span></div>
+                <div className="dash-booking-row"><span className="dash-booking-label">📍 Location</span><span>{booking.event?.location}</span></div>
+                <div className="dash-booking-row"><span className="dash-booking-label">👥 Guests</span><span>{booking.guest_count || 1}</span></div>
+                <div className="dash-booking-row"><span className="dash-booking-label">📋 Status</span><StatusPill status={booking.status} /></div>
+                <div className="dash-booking-row"><span className="dash-booking-label">🗓 Booked On</span><span>{formatDate(booking.created_at?.slice(0, 10))}</span></div>
+                {booking.admin_note && (
+                  <div style={{ background: "#EEF2FF", borderLeft: "3px solid #818CF8", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#4B5563", marginTop: 4 }}>
+                    <strong style={{ color: "#6D28D9", display: "block", marginBottom: 2 }}>Admin Note</strong>
+                    {booking.admin_note}
                   </div>
                 )}
-
-                {/* Cancelled overlay label */}
-                {status === "cancelled" && (
-                  <div className="booking-card-enhanced__cancelled-overlay">
-                    Cancelled
-                  </div>
+                <div className="dash-booking-total">{formatPrice(booking.total_price || booking.event?.price)}</div>
+                {booking.status !== "cancelled" && (
+                  <button
+                    className="theme-btn"
+                    style={{ background: "linear-gradient(135deg, #FCA5A5, #F87171)", color: "#7F1D1D", marginTop: 8, width: "100%" }}
+                    disabled={cancelBookingId === booking.id}
+                    onClick={() => handleCancelBooking(booking.id)}
+                    type="button"
+                  >
+                    {cancelBookingId === booking.id ? "Cancelling..." : "Cancel Booking"}
+                  </button>
                 )}
-              </article>
-            );
-          })}
-        </section>
-      )}
-    </AppShell>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

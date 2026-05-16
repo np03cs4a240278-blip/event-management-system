@@ -477,6 +477,7 @@ img {
   box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
   transform: translateY(-2px);
 }
+
 .booking-card {
   display: grid;
   gap: 0.9rem;

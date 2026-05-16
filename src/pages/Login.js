@@ -1,4 +1,4 @@
-// Login.js — Login page with role selector
+// Login.js — Login page with role selector and forgot password OTP flow
 
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,7 +27,6 @@ function Login() {
     if (!loading && user) navigate(getHomeRoute(user), { replace: true });
   }, [loading, navigate, user]);
 
-  // Switch role — pre-fill demo credentials so login is instant
   const handleRoleSelect = (selectedRole) => {
     setRole(selectedRole);
     setError("");
@@ -55,8 +54,15 @@ function Login() {
     try {
       const response = await API.post("/forgot-password", { email });
       const defaultPassword = response.data.default_password || "";
-      setPassword(defaultPassword);
-      window.alert(`Your default password is "${defaultPassword}"`);
+      // Navigate to OTP verification for forgot-password flow
+      navigate("/verify-otp", {
+        state: {
+          email,
+          context: "forgot-password",
+          redirectTo: "/login",
+          defaultPassword,
+        },
+      });
     } catch (requestError) {
       setError(getErrorMessage(requestError, "Could not reset password."));
     } finally {
@@ -66,7 +72,6 @@ function Login() {
 
   return (
     <div className="login-page">
-
       <div className="login-header theme-header">
         <img
           src={myLogo}
@@ -79,7 +84,6 @@ function Login() {
 
       <div className="login-wrapper">
         <div className="login-card theme-card">
-
           <h2 className="login-title">Welcome Back</h2>
           <p className="login-sub">Select your role and sign in</p>
 
@@ -107,32 +111,20 @@ function Login() {
             <div className="form-group">
               <label className="form-label">Email Address *</label>
               <input
-                type="email"
-                className="theme-input"
-                placeholder="you@gmail.com"
-                autoComplete="off"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                type="email" className="theme-input" placeholder="you@gmail.com"
+                autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} required
               />
             </div>
-
             <div className="form-group">
               <label className="form-label">Password *</label>
               <input
-                type="password"
-                className="theme-input"
-                placeholder="Enter your password"
-                autoComplete="new-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                type="password" className="theme-input" placeholder="Enter your password"
+                autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} required
               />
             </div>
 
             <button
-              type="button"
-              onClick={handleForgotPassword}
+              type="button" onClick={handleForgotPassword}
               style={{ background: "none", border: "none", color: "#818CF8", cursor: "pointer",
                        padding: 0, fontSize: 13, fontWeight: 600, marginBottom: 12, display: "block" }}
             >
@@ -148,7 +140,6 @@ function Login() {
             Don&apos;t have an account?{" "}
             <Link to="/register" className="theme-link">Register here</Link>
           </p>
-
         </div>
       </div>
     </div>

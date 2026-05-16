@@ -20,12 +20,21 @@ function isPrivateOrLoopbackAddress($host)
 function getAllowedOrigins()
 {
     $rawOrigins = getenv('ALLOWED_ORIGINS') ?: '';
+<<<<<<< HEAD
     if ($rawOrigins === '') return [];
+=======
+
+    if ($rawOrigins === '') {
+        return [];
+    }
+
+>>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
     return array_values(array_filter(array_map('trim', explode(',', $rawOrigins))));
 }
 
 function isAllowedFrontendOrigin($origin)
 {
+<<<<<<< HEAD
     if ($origin === '') return false;
 
     if (in_array($origin, getAllowedOrigins(), true)) return true;
@@ -42,19 +51,64 @@ function isAllowedFrontendOrigin($origin)
 
     $serverHostHeader = $_SERVER['HTTP_HOST'] ?? '';
     $serverHost       = strtolower(explode(':', $serverHostHeader)[0] ?? '');
+=======
+    if ($origin === '') {
+        return false;
+    }
+
+    if (in_array($origin, getAllowedOrigins(), true)) {
+        return true;
+    }
+
+    $parts = parse_url($origin);
+
+    if (!$parts || empty($parts['scheme']) || empty($parts['host'])) {
+        return false;
+    }
+
+    if (!in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
+        return false;
+    }
+
+    $host = strtolower($parts['host']);
+
+    if (in_array($host, ['localhost', '127.0.0.1', '::1'], true)) {
+        return true;
+    }
+
+    if (substr($host, -6) === '.local') {
+        return true;
+    }
+
+    if (isPrivateOrLoopbackAddress($host)) {
+        return true;
+    }
+
+    $serverHostHeader = $_SERVER['HTTP_HOST'] ?? '';
+    $serverHost = strtolower(explode(':', $serverHostHeader)[0] ?? '');
+>>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
 
     return $serverHost !== '' && $host === $serverHost;
 }
 
+<<<<<<< HEAD
 // Configure session cookie with secure defaults
+=======
+>>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
 $sessionLifetime = (int)(getenv('SESSION_LIFETIME') ?: 86400);
 $isSecureRequest = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
 
 session_set_cookie_params([
     'lifetime' => $sessionLifetime,
+<<<<<<< HEAD
     'path'     => '/',
     'domain'   => '',
     'secure'   => $isSecureRequest,
+=======
+    'path' => '/',
+    'domain' => '',
+    'secure' => $isSecureRequest,
+>>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
     'httponly' => true,
     'samesite' => 'Lax',
 ]);
@@ -77,7 +131,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
     exit;
 }
 
+<<<<<<< HEAD
 // Load helpers, config, middleware, models, controllers, and routes
+=======
+// Load files
+>>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
 require 'helpers/response.php';
 require 'config/db.php';
 require 'middleware/auth.php';
@@ -93,6 +151,7 @@ require 'controllers/ContactMessageController.php';
 require 'routes/api.php';
 
 try {
+<<<<<<< HEAD
     $db = getDatabaseConnection();
 
     $userModel = new User($db);
@@ -105,12 +164,32 @@ try {
 
     // Parse URL path
     $path        = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+=======
+    // Connect DB
+    $db = getDatabaseConnection();
+
+    // Create objects
+    $userModel = new User($db);
+    $auth = new AuthController($userModel);
+    $users = new UserController($userModel);
+    $eventModel = new Event($db);
+    $event = new EventController($eventModel);
+    $booking = new BookingController(new Booking($db), $eventModel);
+    $contact = new ContactMessageController(new ContactMessage($db));
+
+    // Get URL path
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+>>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
     $apiPosition = strpos($path, '/api');
 
     if ($apiPosition !== false) {
         $path = substr($path, $apiPosition);
     }
 
+<<<<<<< HEAD
+=======
+    // Handle request
+>>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
     handleApiRequest($_SERVER['REQUEST_METHOD'], $path, $auth, $users, $event, $booking, $contact);
 
 } catch (Exception $e) {

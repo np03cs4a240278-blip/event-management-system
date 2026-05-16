@@ -1,5 +1,6 @@
 // admin/Bookings.js — Admin view of all bookings
 // Allows confirming, adding notes, and deleting bookings.
+// Enhanced: status pills, better search, improved layout
 
 import { useEffect, useState } from "react";
 import AppShell from "../../components/AppShell";
@@ -14,6 +15,7 @@ const STATUS_LABEL = {
   [STATUS.CANCELLED]: "Cancelled",
 };
 
+// ── Single booking row ───────────────────────────────────────────────────────
 function BookingRow({ booking, onDelete, onConfirm }) {
   const [review, setReview]   = useState(booking.admin_note || "");
   const [editing, setEditing] = useState(false);
@@ -39,11 +41,18 @@ function BookingRow({ booking, onDelete, onConfirm }) {
     await onDelete(booking.id);
   };
 
-  const statusColor = {
+  // Status badge styles
+  const statusStyle = {
     [STATUS.PENDING]:   { background: "#fef3c7", color: "#92400e" },
     [STATUS.CONFIRMED]: { background: "#d1fae5", color: "#065f46" },
     [STATUS.CANCELLED]: { background: "#fee2e2", color: "#b91c1c" },
   }[status] || { background: "#fef3c7", color: "#92400e" };
+
+  const statusIcon = {
+    [STATUS.PENDING]:   "⏳",
+    [STATUS.CONFIRMED]: "✅",
+    [STATUS.CANCELLED]: "❌",
+  }[status] || "⏳";
 
   return (
     <article className="admin-booking-row">
@@ -59,7 +68,7 @@ function BookingRow({ booking, onDelete, onConfirm }) {
           <p className="eyebrow">Event</p>
           <strong>{booking.event?.title}</strong>
           <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--muted)" }}>
-            {booking.event?.location} · {formatDate(booking.event?.date)}
+            📍 {booking.event?.location} · 📅 {formatDate(booking.event?.date)}
           </p>
         </div>
         {/* Price */}
@@ -75,13 +84,22 @@ function BookingRow({ booking, onDelete, onConfirm }) {
         {/* Status badge */}
         <div>
           <p className="eyebrow">Status</p>
-          <span style={{ ...statusColor, padding: "3px 12px", borderRadius: 999, fontSize: "0.82rem", fontWeight: 700 }}>
-            {STATUS_LABEL[status] || STATUS_LABEL[STATUS.PENDING]}
+          <span style={{
+            ...statusStyle,
+            padding: "4px 12px",
+            borderRadius: 999,
+            fontSize: "0.8rem",
+            fontWeight: 700,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 5,
+          }}>
+            {statusIcon} {STATUS_LABEL[status] || STATUS_LABEL[STATUS.PENDING]}
           </span>
         </div>
       </div>
 
-      {/* Admin review box */}
+      {/* Admin review / confirm box */}
       <div className="admin-booking-row__review">
         {editing ? (
           <>
@@ -94,9 +112,11 @@ function BookingRow({ booking, onDelete, onConfirm }) {
             />
             <div className="row-actions" style={{ marginTop: 8 }}>
               <button className="button" disabled={saving} onClick={handleConfirm} type="button">
-                {saving ? "Saving..." : status === STATUS.CONFIRMED ? "Save Note" : "Confirm & Save"}
+                {saving ? "Saving..." : status === STATUS.CONFIRMED ? "Save Note" : "✓ Confirm & Save"}
               </button>
-              <button className="button button-secondary" onClick={() => setEditing(false)} type="button">Cancel</button>
+              <button className="button button-secondary" onClick={() => setEditing(false)} type="button">
+                Cancel
+              </button>
             </div>
           </>
         ) : (
@@ -117,7 +137,9 @@ function BookingRow({ booking, onDelete, onConfirm }) {
                   Edit Note
                 </button>
               )}
-              <button className="button button-danger" onClick={handleDelete} type="button">Delete</button>
+              <button className="button button-danger" onClick={handleDelete} type="button">
+                Delete
+              </button>
             </div>
           </>
         )}
@@ -126,6 +148,7 @@ function BookingRow({ booking, onDelete, onConfirm }) {
   );
 }
 
+// ── Main Bookings page ───────────────────────────────────────────────────────
 function Bookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -174,6 +197,7 @@ function Bookings() {
     }
   };
 
+  // Filter bookings by search query
   const filtered = bookings.filter((b) => {
     const q = search.toLowerCase();
     return (
@@ -184,37 +208,56 @@ function Bookings() {
     );
   });
 
+  // Summary counts
+  const confirmed = bookings.filter((b) => b.status === STATUS.CONFIRMED).length;
+  const pending   = bookings.filter((b) => !b.status || b.status === STATUS.PENDING).length;
+  const totalRevenue = bookings.reduce(
+    (s, b) => s + (Number(b.total_price) || Number(b.event?.price) || 0), 0
+  );
+
   return (
     <AppShell subtitle="Review every booking, confirm reservations, and add admin notes." title="All Bookings">
 
-      {error    ? <p className="message message-error">{error}</p>     : null}
-      {feedback ? <p className="message message-success">{feedback}</p> : null}
+      {error    ? <p className="message message-error">⚠️ {error}</p>       : null}
+      {feedback ? <p className="message message-success">✅ {feedback}</p>  : null}
 
-      {/* Stats bar */}
-      <section className="stats-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
-        <article className="stat-card">
+      {/* ── Stats bar ── */}
+      <section className="stats-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
+        <article className="stat-card" style={{ borderTop: "4px solid #7c3aed" }}>
           <span className="stat-card__label">Total Bookings</span>
           <strong>{bookings.length}</strong>
         </article>
-        <article className="stat-card">
+        <article className="stat-card" style={{ borderTop: "4px solid #027a48" }}>
+          <span className="stat-card__label">Confirmed</span>
+          <strong>{confirmed}</strong>
+        </article>
+        <article className="stat-card" style={{ borderTop: "4px solid #b45309" }}>
+          <span className="stat-card__label">Pending</span>
+          <strong>{pending}</strong>
+        </article>
+        <article className="stat-card" style={{ borderTop: "4px solid #0f766e" }}>
           <span className="stat-card__label">Unique Users</span>
           <strong>{new Set(bookings.map((b) => b.user?.email)).size}</strong>
         </article>
-        <article className="stat-card">
+        <article className="stat-card" style={{ borderTop: "4px solid #be185d" }}>
           <span className="stat-card__label">Total Revenue</span>
-          <strong>Rs. {bookings.reduce((s, b) => s + (Number(b.total_price) || Number(b.event?.price) || 0), 0).toLocaleString()}</strong>
+          <strong>Rs. {totalRevenue.toLocaleString()}</strong>
         </article>
       </section>
 
+      {/* ── Bookings list ── */}
       <section className="panel">
         <div className="section-heading">
-          <div><p className="eyebrow">Booking records</p><h2>All Bookings</h2></div>
+          <div>
+            <p className="eyebrow">Booking records</p>
+            <h2>All Bookings</h2>
+          </div>
           <span className="pill">{filtered.length} shown</span>
         </div>
 
         {/* Search */}
-        <label className="field" style={{ maxWidth: 360, marginBottom: "1rem" }}>
-          <span>Search by user, email or event</span>
+        <label className="field" style={{ maxWidth: 380, marginBottom: "1rem" }}>
+          <span>🔍 Search by user, email or event</span>
           <input
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Type to filter..."
@@ -223,10 +266,16 @@ function Bookings() {
           />
         </label>
 
-        {loading ? <p>Loading bookings...</p> : filtered.length === 0 ? (
+        {loading ? (
+          <p style={{ color: "var(--muted)", padding: "1rem 0" }}>Loading bookings...</p>
+        ) : filtered.length === 0 ? (
           <div className="empty-state">
             <h3>No bookings found</h3>
-            <p>{search ? "Try a different search term." : "Bookings will appear here once users reserve events."}</p>
+            <p>
+              {search
+                ? "Try a different search term."
+                : "Bookings will appear here once users reserve events."}
+            </p>
           </div>
         ) : (
           <div className="admin-bookings-list">

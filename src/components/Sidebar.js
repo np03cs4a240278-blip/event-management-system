@@ -1,3 +1,6 @@
+// Sidebar.js — Left navigation panel for AppShell pages
+// Enhanced: emoji icons on nav links for better visual hierarchy
+
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 

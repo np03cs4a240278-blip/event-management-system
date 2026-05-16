@@ -23,7 +23,10 @@ CREATE TABLE IF NOT EXISTS events (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+<<<<<<< HEAD
 -- Full bookings table with all booking details
+=======
+>>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
 CREATE TABLE IF NOT EXISTS bookings (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id INT UNSIGNED NOT NULL,
@@ -51,7 +54,10 @@ CREATE TABLE IF NOT EXISTS bookings (
     CONSTRAINT unique_user_event UNIQUE (user_id, event_id)
 );
 
+<<<<<<< HEAD
 -- Contact messages from the landing page
+=======
+>>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
 CREATE TABLE IF NOT EXISTS contact_messages (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,

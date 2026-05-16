@@ -1,14 +1,13 @@
-/* FeedbackForm.css */
+/* FeedbackForm.css — Feedback/review form styles */
 
-/* ── Standalone page wrapper ─────────────────────────────────────────────── */
 .fb-page {
   min-height: 100vh;
   background: #F8F9FD;
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI Variable", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .fb-header {
-  background: linear-gradient(135deg, #FBCFE8, #A5B4FC);
+  background: linear-gradient(135deg, #FBCFE8 0%, #C7D2FE 50%, #A5B4FC 100%);
   padding: 40px 24px;
   text-align: center;
 }
@@ -24,29 +23,22 @@
   margin: 0;
 }
 
-/* ── Shared container ────────────────────────────────────────────────────── */
 .fb-container {
   max-width: 680px;
   margin: 0 auto;
   padding: 32px 16px 48px;
 }
 
-/* Embedded mode — no outer padding, full width inside parent */
-.fb-embedded {
-  padding: 24px 0 8px;
-}
-
-/* ── Summary bar ─────────────────────────────────────────────────────────── */
 .fb-summary {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   background: #fff;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 18px 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(165, 180, 252, 0.12);
+  border: 1px solid #EDE9FE;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(165, 180, 252, 0.12);
   flex-wrap: wrap;
 }
 .fb-summary-score {
@@ -55,78 +47,38 @@
   gap: 2px;
 }
 .fb-summary-num {
-  font-size: 44px;
+  font-size: 48px;
   font-weight: 800;
   color: #818CF8;
   line-height: 1;
 }
 .fb-summary-max {
-  font-size: 16px;
+  font-size: 18px;
   color: #9CA3AF;
   font-weight: 600;
 }
-.fb-summary-right {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.fb-summary-count {
-  font-size: 13px;
-  color: #9CA3AF;
-}
+.fb-summary-stars { font-size: 22px; margin-bottom: 4px; }
+.fb-summary-count { font-size: 13px; color: #9CA3AF; }
 
-/* "Write a Review" button in summary bar */
-.fb-write-btn {
-  margin-left: auto;
-  padding: 9px 18px;
-  background: linear-gradient(135deg, #A5B4FC, #818CF8);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
-  white-space: nowrap;
-}
-.fb-write-btn:hover {
-  opacity: 0.88;
-  transform: translateY(-1px);
-}
-
-/* ── Static stars (read-only display) ───────────────────────────────────── */
-.fb-static-stars { display: inline-flex; gap: 2px; }
-.fb-static-stars--sm span { font-size: 15px; }
-.fb-static-stars--md span { font-size: 20px; }
-.fb-star--on  { color: #FBBF24; }
-.fb-star--off { color: #D1D5DB; }
-
-/* ── Form card ───────────────────────────────────────────────────────────── */
 .fb-card {
   background: #fff;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #EDE9FE;
   border-radius: 16px;
-  padding: 28px;
-  box-shadow: 0 4px 20px rgba(165, 180, 252, 0.15);
-  margin-bottom: 24px;
-  animation: fb-slide-in 0.2s ease;
-}
-@keyframes fb-slide-in {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(165, 180, 252, 0.12);
+  margin-bottom: 32px;
 }
 .fb-card-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: #1E1B4B;
-  margin: 0 0 20px;
+  margin: 0 0 24px;
   padding-bottom: 12px;
-  border-bottom: 2px solid #A5B4FC;
+  border-bottom: 2px solid #C7D2FE;
 }
 
-/* ── Form fields ─────────────────────────────────────────────────────────── */
 .fb-field {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   position: relative;
 }
 .fb-label {
@@ -134,29 +86,26 @@
   font-size: 13px;
   font-weight: 700;
   color: #4B5563;
-  margin-bottom: 7px;
+  margin-bottom: 8px;
 }
 .fb-input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border: 1.5px solid #E5E7EB;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
   color: #1E1B4B;
   background: #fff;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
+  font-family: inherit;
 }
 .fb-input:focus {
   border-color: #A5B4FC;
   box-shadow: 0 0 0 3px rgba(165, 180, 252, 0.2);
 }
-.fb-textarea {
-  resize: vertical;
-  min-height: 100px;
-  font-family: inherit;
-}
+.fb-textarea { resize: vertical; min-height: 110px; }
 .fb-char-count {
   position: absolute;
   bottom: 10px;
@@ -165,18 +114,16 @@
   color: #9CA3AF;
   pointer-events: none;
 }
-.fb-char-count--warn { color: #EF4444; }
 
-/* ── Interactive star rating ─────────────────────────────────────────────── */
 .fb-stars {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 .fb-star {
   background: none;
   border: none;
-  font-size: 34px;
+  font-size: 36px;
   cursor: pointer;
   color: #D1D5DB;
   padding: 0;
@@ -184,10 +131,7 @@
   transition: color 0.15s, transform 0.15s;
 }
 .fb-star:hover,
-.fb-star.fb-star--on {
-  color: #FBBF24;
-  transform: scale(1.18);
-}
+.fb-star.fb-star--on { color: #FBBF24; transform: scale(1.15); }
 .fb-star-label {
   font-size: 13px;
   font-weight: 600;
@@ -195,53 +139,55 @@
   margin-left: 8px;
 }
 
-/* ── Messages ────────────────────────────────────────────────────────────── */
+/* Read-only stars in review cards */
+.fb-star--on  { color: #FBBF24; font-size: 16px; }
+.fb-star--off { color: #D1D5DB; font-size: 16px; }
+
 .fb-success {
   background: #D1FAE5;
   color: #065F46;
   border: 1px solid #A7F3D0;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 .fb-error {
   background: #FEE2E2;
   color: #B91C1C;
   border: 1px solid #FECACA;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 12px 16px;
   font-size: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
-/* ── Submit button ───────────────────────────────────────────────────────── */
 .fb-submit {
   width: 100%;
-  padding: 12px;
+  padding: 13px;
   background: linear-gradient(135deg, #A5B4FC, #818CF8);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: 999px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.15s;
   margin-top: 4px;
+  letter-spacing: 0.02em;
 }
-.fb-submit:hover  { opacity: 0.9; transform: translateY(-1px); }
+.fb-submit:hover  { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(129,140,248,0.3); }
 .fb-submit:active { transform: translateY(0); }
 
-/* ── Reviews list ────────────────────────────────────────────────────────── */
 .fb-reviews-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: #1E1B4B;
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .fb-reviews-badge {
   background: #EDE9FE;
@@ -252,34 +198,33 @@
   border-radius: 999px;
 }
 
-/* ── Review card ─────────────────────────────────────────────────────────── */
 .fb-review-card {
   background: #fff;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 18px;
-  margin-bottom: 10px;
+  border: 1px solid #EDE9FE;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 12px;
   box-shadow: 0 2px 8px rgba(165, 180, 252, 0.08);
   border-left: 4px solid #A5B4FC;
   transition: transform 0.18s, box-shadow 0.18s;
 }
 .fb-review-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(165, 180, 252, 0.18);
+  box-shadow: 0 6px 20px rgba(165, 180, 252, 0.16);
 }
 .fb-review-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .fb-review-avatar {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, #FBCFE8, #A5B4FC);
   color: #1E1B4B;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -292,20 +237,9 @@
 .fb-review-stars { margin-left: auto; display: flex; gap: 2px; flex-shrink: 0; }
 .fb-review-text  { font-size: 14px; color: #4B5563; line-height: 1.6; margin: 0; }
 
-/* ── Empty state ─────────────────────────────────────────────────────────── */
-.fb-no-reviews {
-  text-align: center;
-  padding: 28px 16px;
-  color: #9CA3AF;
-}
-.fb-no-reviews-icon { font-size: 32px; display: block; margin-bottom: 8px; }
-.fb-no-reviews p    { font-size: 14px; margin: 0; }
-
-/* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
-  .fb-card    { padding: 18px 14px; }
+  .fb-card    { padding: 20px 16px; }
   .fb-star    { font-size: 28px; }
-  .fb-summary-num { font-size: 34px; }
-  .fb-write-btn   { width: 100%; margin-left: 0; margin-top: 8px; }
-  .fb-summary     { flex-direction: column; align-items: flex-start; }
+  .fb-summary-num { font-size: 36px; }
+  .fb-summary { flex-direction: column; align-items: flex-start; gap: 12px; }
 }

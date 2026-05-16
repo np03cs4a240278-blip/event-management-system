@@ -1,4 +1,4 @@
-// Register.js — Sign up page
+// Register.js — Sign up page with OTP verification flow
 
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -37,8 +37,13 @@ export default function Register() {
     setSubmitting(true);
     try {
       await register({ name, email, password, role: "user" });
-      setSuccess("Account created! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 1500);
+      setSuccess("Account created! Sending OTP to your email...");
+      // Navigate to OTP verification page with registration context
+      setTimeout(() => {
+        navigate("/verify-otp", {
+          state: { email, userName: name, context: "registration", redirectTo: "/login" },
+        });
+      }, 800);
     } catch (err) {
       setError(getErrorMessage(err, "Registration failed. Please try again."));
     } finally {

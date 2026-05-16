@@ -3,13 +3,14 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Public pages
-import Home         from "./pages/Home";
-import Login        from "./pages/Login";
-import Signup       from "./pages/Signup";
-import Register     from "./pages/Register";
-import FeedbackForm from "./components/FeedbackForm";
+import Home            from "./pages/Home";
+import Login           from "./pages/Login";
+import Signup          from "./pages/Signup";
+import Register        from "./pages/Register";
+import OtpVerification from "./pages/OtpVerification";
+import FeedbackForm    from "./components/FeedbackForm";
 
-// Dashboard pages (theme-styled, backend-connected)
+// Dashboard pages
 import UserDashboard from "./pages/UserDashboard";
 import BookVenue     from "./pages/BookVenue";
 
@@ -30,11 +31,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public */}
-          <Route path="/"         element={<Home />} />
-          <Route path="/login"    element={<Login />} />
-          <Route path="/signup"   element={<Signup />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/feedback" element={<FeedbackForm eventId="standalone" eventName="Tech Summit 2026" />} />
+          <Route path="/"           element={<Home />} />
+          <Route path="/login"      element={<Login />} />
+          <Route path="/signup"     element={<Signup />} />
+          <Route path="/register"   element={<Register />} />
+          <Route path="/verify-otp" element={<OtpVerification />} />
+          <Route path="/feedback"   element={<FeedbackForm eventName="Tech Summit 2026" />} />
 
           {/* User routes */}
           <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
