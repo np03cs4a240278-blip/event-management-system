@@ -98,7 +98,30 @@ export function AuthProvider({ children }) {
 
   // Register: send name + email + password to backend
   const register = async (payload) => {
-    await API.post("/register", payload);
+    const response = await API.post("/register", payload);
+    return response.data;
+  };
+
+  const verifyOtp = async (payload) => {
+    const response = await API.post("/verify-otp", payload);
+    const verifiedUser = response.data.user ?? null;
+    syncUserState(verifiedUser);
+    return response.data;
+  };
+
+  const resendOtp = async (payload) => {
+    const response = await API.post("/resend-otp", payload);
+    return response.data;
+  };
+
+  const requestPasswordResetOtp = async (payload) => {
+    const response = await API.post("/forgot-password", payload);
+    return response.data;
+  };
+
+  const resetPasswordWithOtp = async (payload) => {
+    const response = await API.post("/reset-password-otp", payload);
+    return response.data;
   };
 
   const changePassword = async (payload) => {
@@ -118,7 +141,20 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register, changePassword }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        register,
+        verifyOtp,
+        resendOtp,
+        requestPasswordResetOtp,
+        resetPasswordWithOtp,
+        changePassword,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

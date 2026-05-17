@@ -29,8 +29,10 @@ function Signup() {
     setFeedback({ type: "", text: "" });
     try {
       await register({ name, email, password });
-      setFeedback({ type: "success", text: "Account created successfully. Please login to continue." });
-      setTimeout(() => navigate("/", { replace: true }), 1500);
+      navigate("/login", {
+        replace: true,
+        state: { message: "Account created successfully. Please login." },
+      });
     } catch (requestError) {
       setFeedback({ type: "error", text: getErrorMessage(requestError, "Signup failed.") });
     } finally {
@@ -43,7 +45,7 @@ function Signup() {
       <div className="auth-card auth-card--wide">
         <p className="eyebrow">Create your account</p>
         <h1>Join Event</h1>
-        <p className="auth-subtitle">Register as a user to explore events and manage your bookings.</p>
+        <p className="auth-subtitle">Register as a user to explore events and book them easily.</p>
 
         {feedback.text ? (
           <p className={`message ${feedback.type === "error" ? "message-error" : "message-success"}`}>

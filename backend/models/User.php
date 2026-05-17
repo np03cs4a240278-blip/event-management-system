@@ -59,21 +59,83 @@ class User
     }
 
     // Create new user
-    public function create($name, $email, $password, $role = 'user')
+    public function create($name, $email, $password, $role = 'user', $isVerified = false)
     {
         $stmt = $this->db->prepare(
-            "INSERT INTO users (name, email, password, role) 
-             VALUES (:name, :email, :password, :role)"
+            "INSERT INTO users (
+                name, email, password, role, is_verified, verified_at, otp_code_hash, otp_expires_at, otp_last_sent_at, otp_purpose
+            ) VALUES (
+                :name, :email, :password, :role, :is_verified, :verified_at, :otp_code_hash, :otp_expires_at, :otp_last_sent_at, :otp_purpose
+            )"
         );
 
         $stmt->execute([
             'name' => $name,
             'email' => $email,
             'password' => $password,
-            'role' => $role
+            'role' => $role,
+            'is_verified' => $isVerified ? 1 : 0,
+            'verified_at' => $isVerified ? date('Y-m-d H:i:s') : null,
+            'otp_code_hash' => null,
+            'otp_expires_at' => null,
+            'otp_last_sent_at' => null,
+            'otp_purpose' => null,
         ]);
 
         return $this->findById($this->db->lastInsertId());
+    }
+
+    public function storeOtpChallenge($id, $otpPurpose, $otpCodeHash, $otpExpiresAt, $otpLastSentAt)
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE users
+             SET otp_code_hash = :otp_code_hash,
+                 otp_expires_at = :otp_expires_at,
+                 otp_last_sent_at = :otp_last_sent_at,
+                 otp_purpose = :otp_purpose
+             WHERE id = :id"
+        );
+
+        return $stmt->execute([
+            'id' => $id,
+            'otp_purpose' => $otpPurpose,
+            'otp_code_hash' => $otpCodeHash,
+            'otp_expires_at' => $otpExpiresAt,
+            'otp_last_sent_at' => $otpLastSentAt,
+        ]);
+    }
+
+    public function clearOtpChallenge($id)
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE users
+             SET otp_code_hash = NULL,
+                 otp_expires_at = NULL,
+                 otp_last_sent_at = NULL,
+                 otp_purpose = NULL
+             WHERE id = :id"
+        );
+
+        return $stmt->execute(['id' => $id]);
+    }
+
+    public function markAsVerified($id)
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE users
+             SET is_verified = 1,
+                 verified_at = :verified_at,
+                 otp_code_hash = NULL,
+                 otp_expires_at = NULL,
+                 otp_last_sent_at = NULL,
+                 otp_purpose = NULL
+             WHERE id = :id"
+        );
+
+        return $stmt->execute([
+            'id' => $id,
+            'verified_at' => date('Y-m-d H:i:s'),
+        ]);
     }
 
     // Update password by email
@@ -139,6 +201,8 @@ class User
             'deactivated_at' => $user['deactivated_at'] ?? null,
             'role' => $user['role'],
             'must_change_password' => (bool)($user['must_change_password'] ?? 0),
+            'is_verified' => (bool)($user['is_verified'] ?? 1),
+            'verified_at' => $user['verified_at'] ?? null,
             'created_at' => $user['created_at'] ?? null
         ];
     }

@@ -3,14 +3,19 @@ USE event_management_system;
 -- Admin login : admin@gmail.com / admin123
 -- User login  : user@gmail.com  / user12345
 
-INSERT INTO users (name, email, password, role)
+INSERT INTO users (name, email, password, role, is_verified, verified_at, otp_code_hash, otp_expires_at, otp_last_sent_at)
 VALUES
-    ('Admin User', 'admin@gmail.com', '$2y$10$3TUJ7d.ge78QU/875SIpy.OJBkYNVJ5ijPxq8RTp5CI6ukMww1gza', 'admin'),
-    ('Sample User', 'user@gmail.com',  '$2y$10$Jv3xxcZnoteaNznk58pMwORccXHMjfzYTkYZLJAWOJfzwQ/nsRQOm', 'user')
+    ('Admin User', 'admin@gmail.com', '$2y$10$3TUJ7d.ge78QU/875SIpy.OJBkYNVJ5ijPxq8RTp5CI6ukMww1gza', 'admin', 1, NOW(), NULL, NULL, NULL),
+    ('Sample User', 'user@gmail.com',  '$2y$10$Jv3xxcZnoteaNznk58pMwORccXHMjfzYTkYZLJAWOJfzwQ/nsRQOm', 'user', 1, NOW(), NULL, NULL, NULL)
 ON DUPLICATE KEY UPDATE
-    name     = VALUES(name),
-    password = VALUES(password),
-    role     = VALUES(role);
+    name             = VALUES(name),
+    password         = VALUES(password),
+    role             = VALUES(role),
+    is_verified      = VALUES(is_verified),
+    verified_at      = VALUES(verified_at),
+    otp_code_hash    = VALUES(otp_code_hash),
+    otp_expires_at   = VALUES(otp_expires_at),
+    otp_last_sent_at = VALUES(otp_last_sent_at);
 
 INSERT INTO events (title, description, date, location, price, image)
 VALUES

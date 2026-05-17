@@ -9,6 +9,12 @@ CREATE TABLE IF NOT EXISTS users (
     account_status ENUM('active', 'deactivated') NOT NULL DEFAULT 'active',
     deactivated_at TIMESTAMP NULL DEFAULT NULL,
     must_change_password TINYINT(1) NOT NULL DEFAULT 0,
+    is_verified TINYINT(1) NOT NULL DEFAULT 0,
+    verified_at TIMESTAMP NULL DEFAULT NULL,
+    otp_code_hash VARCHAR(255) NULL DEFAULT NULL,
+    otp_expires_at TIMESTAMP NULL DEFAULT NULL,
+    otp_last_sent_at TIMESTAMP NULL DEFAULT NULL,
+    otp_purpose VARCHAR(50) NULL DEFAULT NULL,
     role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

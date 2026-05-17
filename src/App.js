@@ -7,6 +7,8 @@ import Home       from "./pages/Home";
 import Login      from "./pages/Login";
 import Signup     from "./pages/Signup";
 import Register   from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyOtp  from "./pages/VerifyOtp";
 import FeedbackForm from "./components/FeedbackForm";
 
 // Dashboard pages (theme-styled, backend-connected)
@@ -32,6 +34,8 @@ function App() {
           <Route path="/login"    element={<Login />} />
           <Route path="/signup"   element={<Signup />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/feedback" element={<FeedbackForm eventName="Tech Summit 2026" />} />
 
           {/* User routes */}

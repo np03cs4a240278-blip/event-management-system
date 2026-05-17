@@ -100,6 +100,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 
 // Load files
 require 'helpers/response.php';
+require 'helpers/mailer.php';
 require 'config/db.php';
 require 'middleware/auth.php';
 require 'models/User.php';

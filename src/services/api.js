@@ -43,11 +43,11 @@ const DIRECT_API_BASE_URL_CANDIDATES = Array.from(
 const API_BASE_URL_CANDIDATES = Array.from(
   new Set(
     [
+      ...DIRECT_API_BASE_URL_CANDIDATES,
+      process.env.REACT_APP_API_BASE_URL,
       ...PROJECT_FOLDER_CANDIDATES.map(
         (folder) => `${BACKEND_ORIGIN}/${folder}/backend/api`
       ),
-      process.env.REACT_APP_API_BASE_URL,
-      ...DIRECT_API_BASE_URL_CANDIDATES,
     ]
       .filter(Boolean)
       .map(normalizeUrl)

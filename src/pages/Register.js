@@ -15,7 +15,6 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -27,7 +26,6 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -42,8 +40,10 @@ export default function Register() {
     setSubmitting(true);
     try {
       await register({ name, email, password, role: "user" });
-      setSuccess("Account created! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 1500);
+      navigate("/login", {
+        replace: true,
+        state: { message: "Account created successfully. Please login." },
+      });
     } catch (err) {
       setError(getErrorMessage(err, "Registration failed. Please try again."));
     } finally {
@@ -67,10 +67,9 @@ export default function Register() {
           />
 
           <h2 className="login-title">Sign Up</h2>
-          <p className="login-sub">Fill in your details below</p>
+          <p className="login-sub">Fill in your details below to create your account.</p>
 
           {error && <div className="login-error">{error}</div>}
-          {success && <div className="login-success">{success}</div>}
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">

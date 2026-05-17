@@ -24,8 +24,20 @@ function handleApiRequest($method, $path, $auth, $users, $event, $booking, $cont
         $auth->login();
     }
 
+    if ($resource === 'verify-otp' && $method === 'POST') {
+        $auth->verifyOtp();
+    }
+
+    if ($resource === 'resend-otp' && $method === 'POST') {
+        $auth->resendOtp();
+    }
+
     if ($resource === 'forgot-password' && $method === 'POST') {
         $auth->forgotPassword();
+    }
+
+    if ($resource === 'reset-password-otp' && $method === 'POST') {
+        $auth->resetPasswordWithOtp();
     }
 
     if ($resource === 'change-password' && $method === 'POST') {

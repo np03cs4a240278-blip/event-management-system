@@ -16,6 +16,12 @@
 .login-submit-btn { width: 100%; padding: 12px; font-size: 15px; margin-top: 4px; }
 .login-hint { background: #EDE9FE; color: #5B21B6; border-radius: 8px; padding: 10px 14px; font-size: 12px; text-align: center; margin-top: 16px; }
 .login-footer-text { text-align: center; font-size: 14px; color: #4B5563; margin-top: 16px; }
+.otp-hint { margin-bottom: 16px; text-align: left; word-break: break-word; }
+.otp-input { letter-spacing: 0.25em; text-align: center; font-size: 18px; font-weight: 700; }
+.otp-meta { display: flex; justify-content: space-between; gap: 12px; margin: 12px 0 18px; font-size: 12px; color: #6B7280; }
+.otp-actions { margin-top: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.otp-link-button { border: none; background: none; padding: 0; color: #818CF8; font-size: 14px; font-weight: 600; cursor: pointer; }
+.otp-link-button:disabled { color: #9CA3AF; cursor: not-allowed; }
 
 /* ── Role Selector ── */
 .role-selector {

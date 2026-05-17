@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import API from "../services/api";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/apiError";
 import myLogo from "../assets/mylogo.png";
@@ -14,12 +13,14 @@ function getHomeRoute(user) {
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, loading, login } = useAuth();
   const [role, setRole]           = useState("");
   const [email, setEmail]         = useState("");
   const [password, setPassword]   = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError]         = useState("");
+  const [success, setSuccess]     = useState(location.state?.message || "");
 
   useEffect(() => {
     if (!loading && user) navigate(getHomeRoute(user), { replace: true });
@@ -29,6 +30,7 @@ function Login() {
   const handleRoleSelect = (selectedRole) => {
     setRole(selectedRole);
     setError("");
+    setSuccess("");
   };
 
   const handleLogin = async (e) => {
@@ -36,6 +38,7 @@ function Login() {
     if (!role) { setError("Please select a role to continue."); return; }
     setSubmitting(true);
     setError("");
+    setSuccess("");
     try {
       const authenticatedUser = await login({ email, password, role });
       navigate(getHomeRoute(authenticatedUser), { replace: true });
@@ -46,20 +49,12 @@ function Login() {
     }
   };
 
-  const handleForgotPassword = async () => {
-    if (!email.trim()) { setError("Enter your email first, then click Forgot password."); return; }
-    setSubmitting(true);
-    setError("");
-    try {
-      const response = await API.post("/forgot-password", { email });
-      const defaultPassword = response.data.default_password || "";
-      setPassword(defaultPassword);
-      window.alert(`Your default password is "${defaultPassword}"`);
-    } catch (requestError) {
-      setError(getErrorMessage(requestError, "Could not reset password."));
-    } finally {
-      setSubmitting(false);
-    }
+  const handleForgotPassword = () => {
+    const nextPath = email.trim()
+      ? `/forgot-password?email=${encodeURIComponent(email.trim())}`
+      : "/forgot-password";
+
+    navigate(nextPath);
   };
 
   return (
@@ -79,10 +74,11 @@ function Login() {
           />
 
           <h2 className="login-title">Welcome Back</h2>
-          <p className="login-sub">Select your role and sign in</p>
+          <p className="login-sub">Select your role and sign in to continue.</p>
 
           {loading && <p style={{ textAlign: "center", color: "#9CA3AF", fontSize: 13 }}>Checking session...</p>}
           {error   && <div className="login-error">{error}</div>}
+          {success && <div className="login-success">{success}</div>}
 
           {/* ── ROLE SELECTOR ── */}
           <div className="role-selector">
