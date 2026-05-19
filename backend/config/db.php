@@ -774,7 +774,6 @@ function ensureSqliteSchema(PDO $connection): void
         )"
     );
 
-    // contact_messages — includes status column from the start
     $connection->exec(
         "CREATE TABLE IF NOT EXISTS contact_messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -786,8 +785,6 @@ function ensureSqliteSchema(PDO $connection): void
         )"
     );
 
-    // Run ensureDatabaseStructure AFTER table creation so any missing
-    // columns (e.g. status on an existing SQLite DB) are added automatically.
     ensureDatabaseStructure($connection);
 }
 
