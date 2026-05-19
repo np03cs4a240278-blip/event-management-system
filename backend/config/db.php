@@ -272,6 +272,17 @@ function ensureDatabaseStructure(PDO $connection): void
         "TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER created_at",
         "TEXT NULL DEFAULT CURRENT_TIMESTAMP"
     );
+
+    // ── contact_messages: ensure status column exists ──────────────────────
+    // This is needed for the Admin Contact Messages module.
+    // MySQL uses ENUM; SQLite uses TEXT (both default to 'new').
+    ensureColumnExists(
+        $connection,
+        'contact_messages',
+        'status',
+        "ENUM('new','read','replied') NOT NULL DEFAULT 'new' AFTER message",
+        "TEXT NOT NULL DEFAULT 'new'"
+    );
 }
 
 function upsertDemoUser(PDO $connection, array $user): void
@@ -763,16 +774,20 @@ function ensureSqliteSchema(PDO $connection): void
         )"
     );
 
+    // contact_messages — includes status column from the start
     $connection->exec(
         "CREATE TABLE IF NOT EXISTS contact_messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             email TEXT NOT NULL,
             message TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'new',
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         )"
     );
 
+    // Run ensureDatabaseStructure AFTER table creation so any missing
+    // columns (e.g. status on an existing SQLite DB) are added automatically.
     ensureDatabaseStructure($connection);
 }
 

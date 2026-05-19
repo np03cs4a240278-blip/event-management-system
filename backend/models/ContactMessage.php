@@ -1,6 +1,13 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * ContactMessage model
+ *
+ * Handles all database operations for the contact_messages table.
+ * The `status` column is added automatically by ensureDatabaseStructure()
+ * in db.php, so it is always present when this model runs.
+ */
 class ContactMessage
 {
     private PDO $database;
@@ -14,8 +21,8 @@ class ContactMessage
     public function create(array $data): array
     {
         $statement = $this->database->prepare(
-            'INSERT INTO contact_messages (name, email, message)
-             VALUES (:name, :email, :message)'
+            "INSERT INTO contact_messages (name, email, message, status)
+             VALUES (:name, :email, :message, 'new')"
         );
 
         $statement->execute([
@@ -28,14 +35,11 @@ class ContactMessage
         return $this->findById($createdId);
     }
 
-    // ── Get all messages, newest first ─────────────────────────────────────
+    // ── Get all messages, newest first (admin) ─────────────────────────────
     public function all(): array
     {
-        // Support optional status column (added via migration)
         $statement = $this->database->query(
-            "SELECT id, name, email, message,
-                    COALESCE(status, 'new') AS status,
-                    created_at
+            "SELECT id, name, email, message, status, created_at
              FROM contact_messages
              ORDER BY created_at DESC"
         );
@@ -46,9 +50,7 @@ class ContactMessage
     public function findById(int $id): array
     {
         $statement = $this->database->prepare(
-            "SELECT id, name, email, message,
-                    COALESCE(status, 'new') AS status,
-                    created_at
+            "SELECT id, name, email, message, status, created_at
              FROM contact_messages
              WHERE id = :id
              LIMIT 1"
@@ -57,7 +59,7 @@ class ContactMessage
         return $statement->fetch() ?: [];
     }
 
-    // ── Update status (new → read → replied) ──────────────────────────────
+    // ── Update status of a message (admin) ────────────────────────────────
     public function updateStatus(int $id, string $status): array
     {
         $allowed = ['new', 'read', 'replied'];
@@ -65,20 +67,15 @@ class ContactMessage
             return [];
         }
 
-        // Try to update — if status column doesn't exist yet, silently skip
-        try {
-            $statement = $this->database->prepare(
-                'UPDATE contact_messages SET status = :status WHERE id = :id'
-            );
-            $statement->execute(['status' => $status, 'id' => $id]);
-        } catch (\PDOException $e) {
-            // Column may not exist yet — return current record anyway
-        }
+        $statement = $this->database->prepare(
+            'UPDATE contact_messages SET status = :status WHERE id = :id'
+        );
+        $statement->execute(['status' => $status, 'id' => $id]);
 
         return $this->findById($id);
     }
 
-    // ── Delete a message ───────────────────────────────────────────────────
+    // ── Delete a message (admin) ───────────────────────────────────────────
     public function delete(int $id): bool
     {
         $statement = $this->database->prepare(
@@ -88,20 +85,12 @@ class ContactMessage
         return $statement->rowCount() > 0;
     }
 
-    // ── Count unread (status = 'new') messages ─────────────────────────────
+    // ── Count unread messages (status = 'new') for the badge ──────────────
     public function countUnread(): int
     {
-        try {
-            $statement = $this->database->query(
-                "SELECT COUNT(*) FROM contact_messages WHERE COALESCE(status, 'new') = 'new'"
-            );
-            return (int) $statement->fetchColumn();
-        } catch (\PDOException $e) {
-            // If status column doesn't exist, count all messages
-            $statement = $this->database->query(
-                'SELECT COUNT(*) FROM contact_messages'
-            );
-            return (int) $statement->fetchColumn();
-        }
+        $statement = $this->database->query(
+            "SELECT COUNT(*) FROM contact_messages WHERE status = 'new'"
+        );
+        return (int) $statement->fetchColumn();
     }
 }

@@ -60,6 +60,27 @@ function getAllowedOrigins()
     return array_values(array_filter(array_map('trim', explode(',', $rawOrigins))));
 }
 
+function isPrivateOrLoopbackAddress(string $host): bool
+{
+    // Check for loopback addresses
+    if (in_array($host, ['localhost', '127.0.0.1', '::1'], true)) {
+        return true;
+    }
+
+    // Check for private IPv4 ranges: 10.x.x.x, 172.16-31.x.x, 192.168.x.x
+    if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        $long = ip2long($host);
+        return (
+            ($long >= ip2long('10.0.0.0')     && $long <= ip2long('10.255.255.255'))   ||
+            ($long >= ip2long('172.16.0.0')   && $long <= ip2long('172.31.255.255'))   ||
+            ($long >= ip2long('192.168.0.0')  && $long <= ip2long('192.168.255.255'))  ||
+            ($long >= ip2long('127.0.0.0')    && $long <= ip2long('127.255.255.255'))
+        );
+    }
+
+    return false;
+}
+
 function isAllowedFrontendOrigin($origin)
 {
     if ($origin === '') {

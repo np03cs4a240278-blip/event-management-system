@@ -20,7 +20,6 @@ import {
   AlertCircle,
 } from "lucide-react";
 import API from "../services/api";
-import { getErrorMessage } from "../utils/apiError";
 import "./Home.css";
 import "./theme.css";
 
@@ -48,13 +47,23 @@ export default function Home() {
     setContactError("");
     setContactSuccess("");
     try {
-      await API.post("/contact-messages", { name: contactName, email: contactEmail, message: contactMessage });
+      const res = await API.post("/contact-messages", {
+        name:    contactName.trim(),
+        email:   contactEmail.trim(),
+        message: contactMessage.trim(),
+      });
       setContactName("");
       setContactEmail("");
       setContactMessage("");
-      setContactSuccess("Your message has been sent successfully.");
+      setContactSuccess(
+        res.data?.message || "Your message has been sent successfully."
+      );
     } catch (requestError) {
-      setContactError(getErrorMessage(requestError, "Could not send your message."));
+      // Show the exact backend message so it's easy to debug
+      const msg =
+        requestError?.response?.data?.message ||
+        "Could not send your message. Please check that XAMPP is running.";
+      setContactError(msg);
     } finally {
       setSubmittingContact(false);
     }
