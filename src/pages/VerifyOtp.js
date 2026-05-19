@@ -12,12 +12,12 @@ import {
   AlertTriangle,
   CheckCircle,
   Info,
-  Sparkles,
   Clock,
 } from "lucide-react";
 import OtpInput from "../components/OtpInput";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/apiError";
+import AppLogo from "../components/AppLogo";
 import "../components/OtpVerification.css";
 import "./theme.css";
 import "./Login.css";
@@ -183,11 +183,10 @@ export default function VerifyOtp() {
       {/* Header */}
       <div className="otp-header theme-header">
         <div
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 6, cursor: "pointer" }}
+          style={{ display: "flex", justifyContent: "center", marginBottom: 6, cursor: "pointer" }}
           onClick={() => navigate("/")}
         >
-          <Sparkles size={24} color="#1E1B4B" />
-          <span style={{ fontSize: 18, fontWeight: 800, color: "#1E1B4B" }}>EventPro</span>
+          <AppLogo size="md" />
         </div>
         <p className="otp-header__tagline">Secure OTP Verification</p>
       </div>

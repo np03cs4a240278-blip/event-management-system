@@ -3,9 +3,10 @@
 
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { UserCircle, Mail, Lock, UserPlus, Sparkles, AlertCircle, CheckCircle } from "lucide-react";
+import { UserCircle, Mail, Lock, UserPlus, AlertCircle, CheckCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/apiError";
+import AppLogo from "../components/AppLogo";
 
 function Signup() {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ function Signup() {
       <div className="auth-card auth-card--wide">
         {/* Brand */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-          <Sparkles size={22} color="#818CF8" />
+          <AppLogo size="sm" style={{ height: 36 }} />
           <p className="eyebrow" style={{ margin: 0 }}>Create your account</p>
         </div>
 

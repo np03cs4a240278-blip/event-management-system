@@ -11,7 +11,6 @@ import API from "../services/api";
 import { getErrorMessage } from "../utils/apiError";
 import "./theme.css";
 import "./DashboardShared.css";
-
 const emptyForm = { title: "", description: "", date: "", location: "", price: "", image: "" };
 
 export default function AdminDashboard() {

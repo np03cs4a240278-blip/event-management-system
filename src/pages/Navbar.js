@@ -1,5 +1,5 @@
 // Navbar.js — Shared navigation bar for dashboard pages (non-AppShell)
-// Uses lucide-react icons for a modern, consistent look
+// Uses the real logo image instead of icon + text
 
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -11,10 +11,10 @@ import {
   LogOut,
   Menu,
   X,
-  Sparkles,
   ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import AppLogo from "../components/AppLogo";
 import "./theme.css";
 import "./Navbar.css";
 
@@ -41,10 +41,10 @@ export default function Navbar() {
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 200 }}>
       <nav className="app-navbar theme-header">
-        {/* Brand */}
+
+        {/* Brand — logo image */}
         <div className="app-navbar-brand" onClick={() => navigate("/")}>
-          <Sparkles size={20} style={{ marginRight: 6, verticalAlign: "middle" }} />
-          EventPro
+          <AppLogo size="sm" />
         </div>
 
         {/* Desktop links */}

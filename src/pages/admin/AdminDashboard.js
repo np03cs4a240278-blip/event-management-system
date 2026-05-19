@@ -10,7 +10,6 @@ import {
   DollarSign,
   CheckCircle,
   Clock,
-  TrendingUp,
   LayoutDashboard,
   ArrowRight,
   ShieldCheck,
@@ -22,6 +21,7 @@ import { useContact } from "../../context/ContactContext";
 import API from "../../services/api";
 import { getErrorMessage } from "../../utils/apiError";
 import { formatDate, formatPrice } from "../../utils/formatters";
+import AppLogo from "../../components/AppLogo";
 
 // Animated counter
 function AnimatedNumber({ value }) {
@@ -114,8 +114,7 @@ function AdminDashboard() {
           </h2>
           <p>Platform has <strong>{events.length}</strong> event{events.length !== 1 ? "s" : ""} and <strong>{bookings.length}</strong> total booking{bookings.length !== 1 ? "s" : ""}.</p>
         </div>
-        <TrendingUp size={48} color="#A5B4FC" style={{ opacity: 0.7 }} />
-      </section>
+        <AppLogo size="md" style={{ opacity: 0.92 }} />      </section>
 
       {/* Stats */}
       <section className="stats-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>

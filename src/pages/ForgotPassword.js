@@ -8,13 +8,13 @@ import {
   KeyRound,
   Send,
   RefreshCw,
-  Sparkles,
   AlertCircle,
   CheckCircle,
   Info,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/apiError";
+import AppLogo from "../components/AppLogo";
 import "./theme.css";
 import "./Login.css";
 
@@ -164,11 +164,10 @@ export default function ForgotPassword() {
       {/* Header */}
       <div className="login-header theme-header">
         <div
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 8, cursor: "pointer" }}
+          style={{ display: "flex", justifyContent: "center", marginBottom: 8, cursor: "pointer" }}
           onClick={() => navigate("/")}
         >
-          <Sparkles size={28} color="#1E1B4B" />
-          <span style={{ fontSize: 22, fontWeight: 800, color: "#1E1B4B" }}>EventPro</span>
+          <AppLogo size="lg" />
         </div>
         <p className="site-tagline">Reset your password with email OTP</p>
       </div>

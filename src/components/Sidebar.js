@@ -1,5 +1,5 @@
 // Sidebar.js — Left navigation panel for AppShell pages
-// Uses lucide-react icons + ContactContext for unread badge
+// Uses the real logo image + lucide-react icons + ContactContext for unread badge
 
 import {
   LayoutDashboard,
@@ -8,12 +8,12 @@ import {
   Users,
   UserCircle,
   LogOut,
-  Sparkles,
   MessageSquare,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useContact } from "../context/ContactContext";
+import AppLogo from "./AppLogo";
 
 // Role-based navigation links with icons
 const userLinks = [
@@ -46,15 +46,25 @@ function Sidebar() {
 
   return (
     <aside className="sidebar">
-      {/* Brand */}
-      <div className="sidebar__brand">
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
-          <Sparkles size={20} color="#A5B4FC" />
-          <p className="eyebrow" style={{ margin: 0, color: "rgba(165,180,252,0.9)" }}>
-            Event Management
-          </p>
+      {/* Brand — logo image */}
+      <div
+        className="sidebar__brand"
+        onClick={() => navigate("/")}
+        style={{ cursor: "pointer" }}
+      >
+        {/* Logo centred with a soft white glow behind it */}
+        <div style={{
+          background: "rgba(255,255,255,0.12)",
+          borderRadius: 14,
+          padding: "10px 12px",
+          marginBottom: "0.75rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+          <AppLogo size="sm" style={{ filter: "brightness(1.1) drop-shadow(0 2px 8px rgba(165,180,252,0.4))" }} />
         </div>
-        <h2>EventPro</h2>
+
         <p className="sidebar__user">{user?.name}</p>
         <p className="sidebar__email">{user?.email}</p>
       </div>

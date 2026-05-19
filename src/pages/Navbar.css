@@ -11,17 +11,12 @@
 }
 
 .app-navbar-brand {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--color-text);
-  cursor: pointer;
-  letter-spacing: 0.3px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  cursor: pointer;
   transition: opacity var(--transition-fast);
 }
-.app-navbar-brand:hover { opacity: 0.8; }
+.app-navbar-brand:hover { opacity: 0.85; }
 
 .app-navbar-links {
   display: flex;

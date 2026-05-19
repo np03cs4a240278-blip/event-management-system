@@ -7,7 +7,6 @@ import {
   CalendarDays,
   BookMarked,
   CheckCircle,
-  Sparkles,
   MapPin,
   Tag,
   Clock,
@@ -26,6 +25,7 @@ import { useAuth } from "../context/AuthContext";
 import API from "../services/api";
 import { getErrorMessage } from "../utils/apiError";
 import { formatDate, formatPrice } from "../utils/formatters";
+import AppLogo from "../components/AppLogo";
 import "./theme.css";
 import "./DashboardShared.css";
 
@@ -230,7 +230,7 @@ export default function UserDashboard() {
             </p>
           </div>
           <div className="dash-welcome-emoji">
-            <Sparkles size={40} />
+            <AppLogo size="sm" style={{ height: 48, opacity: 0.9 }} />
           </div>
         </div>
 

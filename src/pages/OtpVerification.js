@@ -11,12 +11,12 @@ import {
   AlertTriangle,
   CheckCircle,
   Info,
-  Sparkles,
   Clock,
 } from "lucide-react";
 import OtpInput from "../components/OtpInput";
 import ToastContainer from "../components/ToastContainer";
 import useToast from "../hooks/useToast";
+import AppLogo from "../components/AppLogo";
 import "../components/OtpVerification.css";
 import "./theme.css";
 
@@ -142,10 +142,9 @@ function OtpVerification() {
         <ToastContainer toasts={toasts} />
         <div className="otp-page">
           <div className="otp-header theme-header">
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer" }}
+            <div style={{ display: "flex", justifyContent: "center", cursor: "pointer" }}
               onClick={() => navigate("/")}>
-              <Sparkles size={22} color="#1E1B4B" />
-              <span style={{ fontSize: 16, fontWeight: 800, color: "#1E1B4B" }}>EventPro</span>
+              <AppLogo size="md" />
             </div>
           </div>
           <div className="otp-wrapper">
@@ -175,10 +174,9 @@ function OtpVerification() {
       <div className="otp-page">
         {/* Header */}
         <div className="otp-header theme-header">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 6, cursor: "pointer" }}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 6, cursor: "pointer" }}
             onClick={() => navigate("/")}>
-            <Sparkles size={22} color="#1E1B4B" />
-            <span style={{ fontSize: 16, fontWeight: 800, color: "#1E1B4B" }}>EventPro</span>
+            <AppLogo size="md" />
           </div>
           <p className="otp-header__tagline">Secure OTP Verification</p>
         </div>

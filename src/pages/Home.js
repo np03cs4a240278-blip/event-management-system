@@ -4,7 +4,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
-  Sparkles,
   Calendar,
   Lock,
   Settings,
@@ -20,6 +19,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import API from "../services/api";
+import AppLogo from "../components/AppLogo";
 import { getErrorMessage } from "../utils/apiError";
 import "./Home.css";
 import "./theme.css";
@@ -65,8 +65,7 @@ export default function Home() {
       {/* ── NAVBAR ── */}
       <header className="home-navbar">
         <div className="home-navbar-brand" onClick={() => navigate("/")}>
-          <Sparkles size={20} style={{ marginRight: 6, verticalAlign: "middle" }} />
-          EventPro
+          <AppLogo size="sm" />
         </div>
         <nav className="home-navbar-links">
           <a href="#about">About</a>
@@ -102,17 +101,10 @@ export default function Home() {
 
       {/* ── HERO ── */}
       <section className="home-hero" id="home">
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-          <div style={{
-            width: 72, height: 72, borderRadius: "50%",
-            background: "linear-gradient(135deg, #FBCFE8, #A5B4FC)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 8px 32px rgba(165,180,252,0.3)",
-          }}>
-            <Sparkles size={32} color="#1E1B4B" />
-          </div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+          <AppLogo size="xl" />
         </div>
-        <h1 className="home-hero-title">Welcome to EventPro</h1>
+        <h1 className="home-hero-title">Welcome to Event Management System</h1>
         <p className="home-hero-desc">
           Browse and book events easily. Simple, fast, and reliable event booking at your fingertips.
         </p>
@@ -132,7 +124,7 @@ export default function Home() {
       <section className="home-section home-section-alt" id="about">
         <h2 className="home-section-title">About Us</h2>
         <p className="home-about-text">
-          EventPro helps you find and book the best events. Whether it is a concert, seminar, or corporate event,
+          Event Management System helps you find and book the best events. Whether it is a concert, seminar, or corporate event,
           our platform makes booking simple, transparent, and hassle-free.
         </p>
       </section>
@@ -257,7 +249,7 @@ export default function Home() {
           <Link to="/register">Register</Link>
         </div>
         <p className="home-footer-copy">
-          © 2025 EventPro. All rights reserved.
+          © 2025 Event Management System. All rights reserved.
         </p>
       </footer>
     </div>
