@@ -4,72 +4,59 @@
 
 import axios from "axios";
 
-const normalizeUrl = (url) => url.replace(/\/+$/, "");
+// ── Determine the API base URL ─────────────────────────────────────────────
+// Priority 1: explicit env variable (set in .env)
+// Priority 2: auto-detect from current hostname (works for XAMPP on localhost)
 
-const BACKEND_ORIGIN =
-  typeof window !== "undefined"
-    ? `${window.location.protocol}//${window.location.hostname}`
-    : "http://localhost";
+function buildBaseUrl() {
+  // Use the explicit env variable if provided
+  if (process.env.REACT_APP_API_BASE_URL) {
+    return process.env.REACT_APP_API_BASE_URL.replace(/\/+$/, "");
+  }
 
-const PROJECT_FOLDER_CANDIDATES = [
-  "event-management-system",
-  "event-management-system-main",
-  process.env.REACT_APP_API_PROJECT_FOLDER,
-].filter(Boolean);
+  // Auto-detect: works when React dev server (port 3000) and XAMPP (port 80)
+  // are both running on the same machine
+  const origin =
+    typeof window !== "undefined"
+      ? `${window.location.protocol}//${window.location.hostname}`
+      : "http://localhost";
 
-// Build a list of candidate base URLs to try (handles different dev setups)
-const API_BASE_URL_CANDIDATES = Array.from(
-  new Set(
-    [
-      ...PROJECT_FOLDER_CANDIDATES.map(
-        (folder) => `${BACKEND_ORIGIN}/${folder}/backend/api`,
-      ),
-      process.env.REACT_APP_API_BASE_URL,
-    ]
-      .filter(Boolean)
-      .map(normalizeUrl),
-  ),
-);
+  const folder =
+    process.env.REACT_APP_API_PROJECT_FOLDER || "event-management-system";
 
+  return `${origin}/${folder}/backend/api`;
+}
+
+const BASE_URL = buildBaseUrl();
+
+// ── Create axios instance ──────────────────────────────────────────────────
 const API = axios.create({
-  baseURL: API_BASE_URL_CANDIDATES[0],
-  withCredentials: true,
+  baseURL: BASE_URL,
+  withCredentials: true, // sends PHP session cookie on every request
   headers: { "Content-Type": "application/json" },
+  timeout: 15000, // 15 second timeout — prevents hanging requests
 });
 
-// Auto-retry with next candidate URL on 404 (handles different server setups)
+// ── Response interceptor ───────────────────────────────────────────────────
+// Normalises errors so every catch block gets a consistent shape
 API.interceptors.response.use(
-  (response) => {
-    const resolvedBaseUrl = normalizeUrl(
-      response.config.baseURL || API.defaults.baseURL,
-    );
-    if (resolvedBaseUrl && API.defaults.baseURL !== resolvedBaseUrl) {
-      API.defaults.baseURL = resolvedBaseUrl;
+  (response) => response,
+  (error) => {
+    // Network error (XAMPP not running, wrong URL, CORS, etc.)
+    if (!error.response) {
+      const networkError = new Error(
+        "Cannot reach the server. Make sure XAMPP is running and Apache is started."
+      );
+      networkError.response = {
+        data: {
+          message:
+            "Cannot reach the server. Make sure XAMPP is running and Apache is started.",
+        },
+      };
+      return Promise.reject(networkError);
     }
-    return response;
-  },
-  async (error) => {
-    const config = error?.config;
-    const status = error?.response?.status;
-
-    if (!config || status !== 404) return Promise.reject(error);
-
-    const currentBaseUrl = normalizeUrl(
-      config.baseURL || API.defaults.baseURL || "",
-    );
-    const triedBaseUrls = config._triedBaseUrls || [currentBaseUrl];
-    const nextBaseUrl = API_BASE_URL_CANDIDATES.find(
-      (candidate) => !triedBaseUrls.includes(candidate),
-    );
-
-    if (!nextBaseUrl) return Promise.reject(error);
-
-    return API.request({
-      ...config,
-      baseURL: nextBaseUrl,
-      _triedBaseUrls: [...triedBaseUrls, nextBaseUrl],
-    });
-  },
+    return Promise.reject(error);
+  }
 );
 
 export default API;

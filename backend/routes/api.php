@@ -13,9 +13,10 @@ function handleApiRequest($method, $path, $auth, $users, $event, $booking, $cont
     array_shift($parts);
 
     $resource = $parts[0] ?? '';
-    $id = $parts[1] ?? null;
+    $id       = $parts[1] ?? null;
+    $sub      = $parts[2] ?? null;
 
-    // AUTH ROUTES
+    // ── AUTH ROUTES ────────────────────────────────────────────────────────
     if ($resource === 'register' && $method === 'POST') {
         $auth->register();
     }
@@ -52,11 +53,12 @@ function handleApiRequest($method, $path, $auth, $users, $event, $booking, $cont
         $auth->me();
     }
 
+    // ── USER ROUTES ────────────────────────────────────────────────────────
     if ($resource === 'users' && $method === 'GET' && !$id) {
         $users->index();
     }
 
-    if ($resource === 'users' && $id && (($parts[2] ?? null) === 'status') && $method === 'PUT') {
+    if ($resource === 'users' && $id && $sub === 'status' && $method === 'PUT') {
         $users->updateStatus($id);
     }
 
@@ -64,32 +66,39 @@ function handleApiRequest($method, $path, $auth, $users, $event, $booking, $cont
         $users->destroy($id);
     }
 
-    // CONTACT MESSAGE ROUTES
+    // ── CONTACT MESSAGE ROUTES ─────────────────────────────────────────────
+    // NOTE: specific sub-routes MUST come before generic /:id routes
+
+    // Public: submit a contact form message
     if ($resource === 'contact-messages' && $method === 'POST' && !$id) {
         $contact->store();
     }
 
-    // Admin: list all contact messages
-    if ($resource === 'contact-messages' && $method === 'GET' && !$id) {
-        $contact->index();
-    }
-
-    // Admin: unread count badge
+    // Admin: get unread count for notification badge
+    // GET /api/contact-messages/unread-count
     if ($resource === 'contact-messages' && $id === 'unread-count' && $method === 'GET') {
         $contact->unreadCount();
     }
 
-    // Admin: update status of a message
-    if ($resource === 'contact-messages' && $id && (($parts[2] ?? null) === 'status') && $method === 'PUT') {
+    // Admin: list all contact messages
+    // GET /api/contact-messages
+    if ($resource === 'contact-messages' && $method === 'GET' && !$id) {
+        $contact->index();
+    }
+
+    // Admin: update status of a specific message
+    // PUT /api/contact-messages/:id/status
+    if ($resource === 'contact-messages' && $id && $sub === 'status' && $method === 'PUT') {
         $contact->updateStatus((int)$id);
     }
 
-    // Admin: delete a message
-    if ($resource === 'contact-messages' && $method === 'DELETE' && $id) {
+    // Admin: delete a specific message
+    // DELETE /api/contact-messages/:id
+    if ($resource === 'contact-messages' && $method === 'DELETE' && $id && $id !== 'unread-count') {
         $contact->destroy((int)$id);
     }
 
-    // EVENT ROUTES
+    // ── EVENT ROUTES ───────────────────────────────────────────────────────
     if ($resource === 'events' && $method === 'GET' && !$id) {
         $event->index();
     }
@@ -99,17 +108,17 @@ function handleApiRequest($method, $path, $auth, $users, $event, $booking, $cont
     }
 
     if ($resource === 'events' && $id) {
-        if ($method === 'GET') $event->show($id);
-        if ($method === 'PUT') $event->update($id);
+        if ($method === 'GET')    $event->show($id);
+        if ($method === 'PUT')    $event->update($id);
         if ($method === 'DELETE') $event->destroy($id);
     }
 
-    // BOOKING ROUTES
+    // ── BOOKING ROUTES ─────────────────────────────────────────────────────
     if ($resource === 'bookings' && $method === 'POST' && !$id) {
         $booking->store();
     }
 
-    if ($resource === 'bookings' && $id && (($parts[2] ?? null) === 'confirm') && $method === 'POST') {
+    if ($resource === 'bookings' && $id && $sub === 'confirm' && $method === 'POST') {
         $booking->update($id);
     }
 
@@ -129,6 +138,7 @@ function handleApiRequest($method, $path, $auth, $users, $event, $booking, $cont
         $booking->allBookings();
     }
 
+    // ── RECOMMENDATIONS ────────────────────────────────────────────────────
     if ($resource === 'recommendations' && $method === 'GET') {
         $recommendation->index();
     }

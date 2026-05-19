@@ -26,7 +26,6 @@ import AppShell from "../../components/AppShell";
 import API from "../../services/api";
 import { getErrorMessage } from "../../utils/apiError";
 import { useContact } from "../../context/ContactContext";
-import "../../pages/DashboardShared.css";
 
 // ── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
