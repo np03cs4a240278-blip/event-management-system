@@ -1,5 +1,7 @@
 // ConfirmModal.js — Reusable confirmation popup before destructive actions
+// Uses lucide-react icons
 
+import { AlertTriangle, CheckCircle } from "lucide-react";
 import "../styles/confirmmodal.css";
 
 /**
@@ -26,12 +28,16 @@ function ConfirmModal({
   if (!isOpen) return null;
 
   return (
-    // Backdrop — clicking outside dismisses
+    /* Backdrop — clicking outside dismisses */
     <div className="modal-backdrop" onClick={onCancel} role="dialog" aria-modal="true">
-      <div
-        className="modal-box"
-        onClick={(e) => e.stopPropagation()} // prevent backdrop click
-      >
+      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+        {/* Icon */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+          {danger
+            ? <AlertTriangle size={32} color="#EF4444" />
+            : <CheckCircle size={32} color="#818CF8" />}
+        </div>
+
         <h3 className="modal-title">{title}</h3>
         {message && <p className="modal-message">{message}</p>}
 

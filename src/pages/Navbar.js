@@ -1,9 +1,20 @@
-// Navbar.js — Shared navigation bar for dashboard pages
+// Navbar.js — Shared navigation bar for dashboard pages (non-AppShell)
+// Uses lucide-react icons for a modern, consistent look
 
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  CalendarDays,
+  BookMarked,
+  UserCircle,
+  LogOut,
+  Menu,
+  X,
+  Sparkles,
+  ShieldCheck,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import myLogo from "../assets/mylogo.png";
 import "./theme.css";
 import "./Navbar.css";
 
@@ -14,12 +25,12 @@ export default function Navbar() {
   const isAdmin = user?.role === "admin";
 
   const links = isAdmin
-    ? [{ to: "/admin/dashboard", label: "Dashboard" }]
+    ? [{ to: "/admin/dashboard", label: "Dashboard", Icon: LayoutDashboard }]
     : [
-        { to: "/user-dashboard", label: "Dashboard" },
-        { to: "/events",         label: "Events" },
-        { to: "/bookings",       label: "My Bookings" },
-        { to: "/profile",        label: "Profile" },
+        { to: "/user-dashboard", label: "Dashboard",  Icon: LayoutDashboard },
+        { to: "/events",         label: "Events",      Icon: CalendarDays },
+        { to: "/bookings",       label: "My Bookings", Icon: BookMarked },
+        { to: "/profile",        label: "Profile",     Icon: UserCircle },
       ];
 
   const handleLogout = async () => {
@@ -30,32 +41,51 @@ export default function Navbar() {
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 200 }}>
       <nav className="app-navbar theme-header">
+        {/* Brand */}
         <div className="app-navbar-brand" onClick={() => navigate("/")}>
-          <img src={myLogo} alt="Event Management System" style={{ height: 44, width: "auto", display: "block" }} />
+          <Sparkles size={20} style={{ marginRight: 6, verticalAlign: "middle" }} />
+          EventPro
         </div>
 
         {/* Desktop links */}
         <div className="app-navbar-links">
-          {links.map((link) => (
+          {links.map(({ to, label, Icon }) => (
             <NavLink
-              key={link.to}
+              key={to}
               className={({ isActive }) => `app-nav-link${isActive ? " active" : ""}`}
               onClick={() => setMenuOpen(false)}
-              to={link.to}
+              to={to}
             >
-              {link.label}
+              <Icon size={15} style={{ verticalAlign: "middle", marginRight: 4 }} />
+              {label}
             </NavLink>
           ))}
-          <span className={`theme-badge ${user?.role}`}>
+
+          {/* Role badge */}
+          <span className={`theme-badge ${user?.role}`} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+            {isAdmin ? <ShieldCheck size={12} /> : <UserCircle size={12} />}
             {user?.role === "admin" ? "Admin" : "User"}
           </span>
+
           <span className="app-nav-username">{user?.name}</span>
-          <button className="app-nav-logout" onClick={handleLogout}>Logout</button>
+
+          <button
+            className="app-nav-logout"
+            onClick={handleLogout}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <LogOut size={14} />
+            Logout
+          </button>
         </div>
 
         {/* Hamburger for mobile */}
-        <button className="app-hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
-          {menuOpen ? "✕" : "☰"}
+        <button
+          className="app-hamburger"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </nav>
 
@@ -66,17 +96,27 @@ export default function Navbar() {
             Logged in as: <strong>{user?.name}</strong>{" "}
             <span className={`theme-badge ${user?.role}`}>{user?.role}</span>
           </div>
-          {links.map((link) => (
+          {links.map(({ to, label, Icon }) => (
             <button
-              key={link.to}
+              key={to}
               className="app-mobile-link"
-              onClick={() => { setMenuOpen(false); navigate(link.to); }}
+              onClick={() => { setMenuOpen(false); navigate(to); }}
             >
-              {link.label}
+              <Icon size={15} style={{ verticalAlign: "middle", marginRight: 6 }} />
+              {label}
             </button>
           ))}
-          <button className="app-mobile-link" onClick={() => { setMenuOpen(false); navigate("/"); }}>Home</button>
-          <button className="app-mobile-link app-mobile-logout" onClick={handleLogout}>Logout</button>
+          <button className="app-mobile-link" onClick={() => { setMenuOpen(false); navigate("/"); }}>
+            Home
+          </button>
+          <button
+            className="app-mobile-link app-mobile-logout"
+            onClick={handleLogout}
+            style={{ display: "flex", alignItems: "center", gap: 6 }}
+          >
+            <LogOut size={14} />
+            Logout
+          </button>
         </div>
       )}
     </div>

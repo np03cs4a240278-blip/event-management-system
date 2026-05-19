@@ -10,6 +10,10 @@
   background: linear-gradient(135deg, #FBCFE8 0%, #C7D2FE 50%, #A5B4FC 100%);
   padding: 40px 24px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 .fb-header-title {
   font-size: 28px;
@@ -57,7 +61,7 @@
   color: #9CA3AF;
   font-weight: 600;
 }
-.fb-summary-stars { font-size: 22px; margin-bottom: 4px; }
+.fb-summary-stars { display: flex; gap: 3px; align-items: center; margin-bottom: 4px; }
 .fb-summary-count { font-size: 13px; color: #9CA3AF; }
 
 .fb-card {
@@ -123,15 +127,15 @@
 .fb-star {
   background: none;
   border: none;
-  font-size: 36px;
   cursor: pointer;
-  color: #D1D5DB;
-  padding: 0;
+  padding: 2px;
   line-height: 1;
-  transition: color 0.15s, transform 0.15s;
+  transition: transform 0.15s;
+  display: flex;
+  align-items: center;
 }
 .fb-star:hover,
-.fb-star.fb-star--on { color: #FBBF24; transform: scale(1.15); }
+.fb-star.fb-star--on { transform: scale(1.2); }
 .fb-star-label {
   font-size: 13px;
   font-weight: 600;
@@ -140,8 +144,13 @@
 }
 
 /* Read-only stars in review cards */
-.fb-star--on  { color: #FBBF24; font-size: 16px; }
-.fb-star--off { color: #D1D5DB; font-size: 16px; }
+.fb-review-stars {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
 
 .fb-success {
   background: #D1FAE5;

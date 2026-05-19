@@ -1,6 +1,7 @@
 // EventCard.js — Displays a single event with booking action
-// Enhanced: hover effect, better button states, image fallback
+// Uses lucide-react icons for a modern, consistent look
 
+import { Calendar, MapPin, Tag, CheckCircle, Ticket } from "lucide-react";
 import { formatDate, formatPrice } from "../utils/formatters";
 
 const FALLBACK_IMAGE =
@@ -11,6 +12,7 @@ function EventCard({ event, onBook, isBooking, alreadyBooked }) {
 
   return (
     <article className="event-card">
+      {/* Event image */}
       <img
         alt={event.title}
         className="event-card__image"
@@ -19,23 +21,52 @@ function EventCard({ event, onBook, isBooking, alreadyBooked }) {
       />
 
       <div className="event-card__content">
+        {/* Date & price meta */}
         <div className="event-card__meta">
-          <span>📅 {formatDate(event.date)}</span>
-          <span>{formatPrice(event.price)}</span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <Calendar size={13} />
+            {formatDate(event.date)}
+          </span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <Tag size={13} />
+            {formatPrice(event.price)}
+          </span>
         </div>
 
         <h3>{event.title}</h3>
         <p>{event.description}</p>
-        <p className="event-card__location">📍 {event.location}</p>
 
+        {/* Location */}
+        <p className="event-card__location" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <MapPin size={13} />
+          {event.location}
+        </p>
+
+        {/* Book button */}
         <button
           className="button event-card__button"
           disabled={alreadyBooked || isBooking}
           onClick={() => onBook(event)}
           type="button"
-          style={alreadyBooked ? { background: "linear-gradient(135deg, #D1FAE5, #A7F3D0)", color: "#065F46" } : {}}
+          style={
+            alreadyBooked
+              ? { background: "linear-gradient(135deg, #D1FAE5, #A7F3D0)", color: "#065F46" }
+              : {}
+          }
         >
-          {alreadyBooked ? "✅ Booked" : isBooking ? "Booking..." : "Book Event"}
+          {alreadyBooked ? (
+            <>
+              <CheckCircle size={15} />
+              Booked
+            </>
+          ) : isBooking ? (
+            "Booking..."
+          ) : (
+            <>
+              <Ticket size={15} />
+              Book Event
+            </>
+          )}
         </button>
       </div>
     </article>

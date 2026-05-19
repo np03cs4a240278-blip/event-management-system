@@ -1,7 +1,19 @@
 // Profile.js — User/Admin profile page with password change
-// Enhanced: better layout, avatar, status indicators
+// Uses lucide-react icons
 
 import { useState } from "react";
+import {
+  UserCircle,
+  Mail,
+  Lock,
+  ShieldCheck,
+  KeyRound,
+  CheckCircle,
+  AlertCircle,
+  Settings,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/apiError";
 import Navbar from "./Navbar";
@@ -11,16 +23,19 @@ import "./DashboardShared.css";
 function Profile() {
   const { user, changePassword } = useAuth();
   const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword]         = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [submitting, setSubmitting]           = useState(false);
-  const [feedback, setFeedback]               = useState({ type: "", text: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState({ type: "", text: "" });
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const isAdmin = user?.role === "admin";
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if ((!user?.must_change_password && !currentPassword) || !newPassword || !confirmPassword) {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!currentPassword || !newPassword || !confirmPassword) {
       setFeedback({ type: "error", text: "All password fields are required." });
       return;
     }
@@ -35,120 +50,150 @@ function Profile() {
     setSubmitting(true);
     setFeedback({ type: "", text: "" });
     try {
-      const res = await changePassword({
+      const response = await changePassword({
         current_password: currentPassword,
-        new_password:     newPassword,
+        new_password: newPassword,
         confirm_password: confirmPassword,
       });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      setFeedback({ type: "success", text: res.message || "Password changed successfully." });
-    } catch (err) {
-      setFeedback({ type: "error", text: getErrorMessage(err, "Could not change password.") });
+      setFeedback({ type: "success", text: response.message || "Password changed successfully." });
+    } catch (requestError) {
+      setFeedback({ type: "error", text: getErrorMessage(requestError, "Could not change password.") });
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Avatar initials (up to 2 letters)
   const initials = user?.name
-    ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()
+    ? user.name.split(" ").map((word) => word[0]).slice(0, 2).join("").toUpperCase()
     : "?";
+
+  // Password input with show/hide toggle
+  function PasswordField({ label, value, onChange, show, onToggle, placeholder, autoComplete }) {
+    return (
+      <div className="form-group">
+        <label className="form-label" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <Lock size={14} />
+          {label}
+        </label>
+        <div style={{ position: "relative" }}>
+          <input
+            autoComplete={autoComplete}
+            className="theme-input"
+            onChange={onChange}
+            placeholder={placeholder}
+            required
+            type={show ? "text" : "password"}
+            value={value}
+            style={{ paddingRight: 40 }}
+          />
+          <button
+            type="button"
+            onClick={onToggle}
+            style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9CA3AF", padding: 0 }}
+          >
+            {show ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dash-page">
       <Navbar />
 
-      {/* Hero banner */}
+      {/* Hero */}
       <div className="dash-hero theme-header">
-        <h1 className="dash-hero-title">My Profile</h1>
+        <h1 className="dash-hero-title">
+          <UserCircle size={22} />
+          My Profile
+        </h1>
         <p className="dash-hero-sub">
           {isAdmin
-            ? "Manage your admin account and credentials."
+            ? "Manage your admin account details and update your password."
             : "View your account details and update your password."}
         </p>
       </div>
 
       <div className="dash-content">
-
-        {/* Temporary password warning */}
-        {user?.must_change_password && (
-          <div className="message message-error">
-            ⚠️ You are using a temporary password. Please change it now before using other pages.
+        {feedback.text ? (
+          <div className={`message ${feedback.type === "error" ? "message-error" : "message-success"}`}
+            style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {feedback.type === "error" ? <AlertCircle size={15} /> : <CheckCircle size={15} />}
+            {feedback.text}
           </div>
-        )}
+        ) : null}
 
-        {/* Feedback message */}
-        {feedback.text && (
-          <div className={`message ${feedback.type === "error" ? "message-error" : "message-success"}`}>
-            {feedback.type === "error" ? "⚠️" : "✅"} {feedback.text}
-          </div>
-        )}
-
-        {/* ── Profile card ── */}
+        {/* Profile info card */}
         <div className="theme-card" style={{ display: "flex", gap: "1.5rem", alignItems: "center", flexWrap: "wrap", marginBottom: 24 }}>
-          {/* Avatar circle */}
+          {/* Avatar */}
           <div style={{
-            width: 80,
-            height: 80,
-            borderRadius: "50%",
-            flexShrink: 0,
+            width: 80, height: 80, borderRadius: "50%", flexShrink: 0,
             background: isAdmin
               ? "linear-gradient(135deg, #f97316, #ef4444)"
               : "linear-gradient(135deg, #A5B4FC, #818CF8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "1.8rem",
-            fontWeight: 800,
-            color: "#fff",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "1.8rem", fontWeight: 800, color: "#fff",
             boxShadow: "0 4px 16px rgba(165,180,252,0.3)",
           }}>
             {initials}
           </div>
 
-          {/* Info grid */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap", marginBottom: 12 }}>
               <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "#1E1B4B" }}>{user?.name}</h2>
-              <span className={`theme-badge ${user?.role}`}>
-                {user?.role === "admin" ? "🛡️ Admin" : "👤 User"}
+              <span className={`theme-badge ${user?.role}`} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                {isAdmin ? <ShieldCheck size={12} /> : <UserCircle size={12} />}
+                {user?.role === "admin" ? "Admin" : "User"}
               </span>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.75rem" }}>
               <div>
                 <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Email</p>
-                <p style={{ margin: 0, fontSize: 14, color: "#1E1B4B" }}>📧 {user?.email}</p>
+                <p style={{ margin: 0, fontSize: 14, color: "#1E1B4B", display: "flex", alignItems: "center", gap: 4 }}>
+                  <Mail size={13} color="#818CF8" />
+                  {user?.email}
+                </p>
               </div>
               <div>
                 <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Account Type</p>
-                <p style={{ margin: 0, fontSize: 14, color: "#1E1B4B", textTransform: "capitalize" }}>{user?.role}</p>
+                <p style={{ margin: 0, fontSize: 14, color: "#1E1B4B", textTransform: "capitalize", display: "flex", alignItems: "center", gap: 4 }}>
+                  {isAdmin ? <ShieldCheck size={13} color="#818CF8" /> : <UserCircle size={13} color="#818CF8" />}
+                  {user?.role}
+                </p>
               </div>
               <div>
                 <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Password Status</p>
-                <p style={{ margin: 0, fontSize: 14 }}>
-                  {user?.must_change_password
-                    ? <span style={{ color: "#B91C1C", fontWeight: 700 }}>⚠️ Temporary — change required</span>
-                    : <span style={{ color: "#065F46", fontWeight: 700 }}>✅ Up to date</span>}
+                <p style={{ margin: 0, fontSize: 14, display: "flex", alignItems: "center", gap: 4 }}>
+                  <CheckCircle size={13} color="#065F46" />
+                  <span style={{ color: "#065F46", fontWeight: 700 }}>Up to date</span>
                 </p>
               </div>
-              {isAdmin && (
+              {isAdmin ? (
                 <div>
                   <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Access Level</p>
-                  <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#1E1B4B" }}>🔑 Full admin access</p>
+                  <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#1E1B4B", display: "flex", alignItems: "center", gap: 4 }}>
+                    <ShieldCheck size={13} color="#818CF8" />
+                    Full admin access
+                  </p>
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
 
-        {/* ── Admin permissions cards ── */}
-        {isAdmin && (
+        {/* Admin capabilities */}
+        {isAdmin ? (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16, marginBottom: 24 }}>
             <div className="theme-card">
-              <h3 style={{ margin: "0 0 12px", fontSize: 16, color: "#1E1B4B" }}>🛡️ Admin Capabilities</h3>
+              <h3 style={{ margin: "0 0 12px", fontSize: 16, color: "#1E1B4B", display: "flex", alignItems: "center", gap: 6 }}>
+                <Settings size={16} color="#818CF8" />
+                Admin Capabilities
+              </h3>
               <ul style={{ margin: 0, paddingLeft: "1.2rem", color: "#6B7280", lineHeight: 2, fontSize: 14 }}>
                 <li>Create, edit and delete events</li>
                 <li>View all user bookings</li>
@@ -158,84 +203,70 @@ function Profile() {
               </ul>
             </div>
             <div className="theme-card">
-              <h3 style={{ margin: "0 0 12px", fontSize: 16, color: "#1E1B4B" }}>🔒 Security Tips</h3>
+              <h3 style={{ margin: "0 0 12px", fontSize: 16, color: "#1E1B4B", display: "flex", alignItems: "center", gap: 6 }}>
+                <ShieldCheck size={16} color="#818CF8" />
+                Security Tips
+              </h3>
               <ul style={{ margin: 0, paddingLeft: "1.2rem", color: "#6B7280", lineHeight: 2, fontSize: 14 }}>
-                <li>Use a strong password (8+ characters)</li>
+                <li>Use a strong password</li>
                 <li>Never share your admin credentials</li>
                 <li>Change your password regularly</li>
                 <li>Log out when done on shared devices</li>
               </ul>
             </div>
           </div>
-        )}
+        ) : null}
 
-        {/* ── Change password form ── */}
+        {/* Change password */}
         <div className="theme-card">
-          <h3 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 800, color: "#1E1B4B" }}>
-            🔑 Change Password
+          <h3 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 800, color: "#1E1B4B", display: "flex", alignItems: "center", gap: 6 }}>
+            <KeyRound size={18} color="#818CF8" />
+            Change Password
           </h3>
           <p style={{ margin: "0 0 20px", fontSize: 14, color: "#6B7280" }}>
-            {user?.must_change_password
-              ? "Set a new password now to replace your temporary password. Minimum 6 characters."
-              : "Enter your current password then set a new one. Minimum 6 characters."}
+            Enter your current password, then set a new one. Minimum 6 characters.
           </p>
 
           <form onSubmit={handleSubmit} style={{ display: "grid", gap: 16 }}>
-            {/* Current password */}
-            <div className="form-group">
-              <label className="form-label">
-                {user?.must_change_password ? "Temporary password (optional)" : "Current password *"}
-              </label>
-              <input
-                autoComplete="current-password"
-                className="theme-input"
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder={user?.must_change_password ? "Already signed in with a temporary password" : "Enter current password"}
-                required={!user?.must_change_password}
-                type="password"
-                value={currentPassword}
-              />
-            </div>
-
-            {/* New password */}
-            <div className="form-group">
-              <label className="form-label">New password *</label>
-              <input
-                autoComplete="new-password"
-                className="theme-input"
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Minimum 6 characters"
-                required
-                type="password"
-                value={newPassword}
-              />
-            </div>
-
-            {/* Confirm password */}
-            <div className="form-group">
-              <label className="form-label">Confirm new password *</label>
-              <input
-                autoComplete="new-password"
-                className="theme-input"
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter new password"
-                required
-                type="password"
-                value={confirmPassword}
-              />
-            </div>
+            <PasswordField
+              label="Current password *"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              show={showCurrent}
+              onToggle={() => setShowCurrent(!showCurrent)}
+              placeholder="Enter current password"
+              autoComplete="current-password"
+            />
+            <PasswordField
+              label="New password *"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              show={showNew}
+              onToggle={() => setShowNew(!showNew)}
+              placeholder="Minimum 6 characters"
+              autoComplete="new-password"
+            />
+            <PasswordField
+              label="Confirm new password *"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              show={showConfirm}
+              onToggle={() => setShowConfirm(!showConfirm)}
+              placeholder="Re-enter new password"
+              autoComplete="new-password"
+            />
 
             <button
               className="theme-btn login-submit-btn"
               disabled={submitting}
+              style={{ maxWidth: 240, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
               type="submit"
-              style={{ maxWidth: 240 }}
             >
+              <KeyRound size={15} />
               {submitting ? "Saving..." : "Change Password"}
             </button>
           </form>
         </div>
-
       </div>
     </div>
   );

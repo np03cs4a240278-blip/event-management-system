@@ -3,16 +3,17 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Public pages
-import Home            from "./pages/Home";
-import Login           from "./pages/Login";
-import Signup          from "./pages/Signup";
-import Register        from "./pages/Register";
-import OtpVerification from "./pages/OtpVerification";
-import FeedbackForm    from "./components/FeedbackForm";
+import Home       from "./pages/Home";
+import Login      from "./pages/Login";
+import Signup     from "./pages/Signup";
+import Register   from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyOtp  from "./pages/VerifyOtp";
+import FeedbackForm from "./components/FeedbackForm";
 
-// Dashboard pages
-import UserDashboard from "./pages/UserDashboard";
-import BookVenue     from "./pages/BookVenue";
+// Dashboard pages (theme-styled, backend-connected)
+import UserDashboard  from "./pages/UserDashboard";
+import BookVenue      from "./pages/BookVenue";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -20,10 +21,8 @@ import AdminBookings  from "./pages/admin/Bookings";
 import ManageEvents   from "./pages/admin/ManageEvents";
 import ManageUsers    from "./pages/admin/ManageUsers";
 import Profile        from "./pages/Profile";
-
-// User pages
-import UserBookings from "./pages/user/Bookings";
-import Events       from "./pages/user/Events";
+import UserBookings   from "./pages/user/Bookings";
+import Events         from "./pages/user/Events";
 
 function App() {
   return (
@@ -31,12 +30,13 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public */}
-          <Route path="/"           element={<Home />} />
-          <Route path="/login"      element={<Login />} />
-          <Route path="/signup"     element={<Signup />} />
-          <Route path="/register"   element={<Register />} />
-          <Route path="/verify-otp" element={<OtpVerification />} />
-          <Route path="/feedback"   element={<FeedbackForm eventName="Tech Summit 2026" />} />
+          <Route path="/"         element={<Home />} />
+          <Route path="/login"    element={<Login />} />
+          <Route path="/signup"   element={<Signup />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route path="/feedback" element={<FeedbackForm eventName="Tech Summit 2026" />} />
 
           {/* User routes */}
           <Route element={<ProtectedRoute allowedRoles={["user"]} />}>

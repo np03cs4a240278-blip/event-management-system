@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CheckCircleOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import { CheckCircle, MapPin } from "lucide-react";
 import {
   Alert, Button, Card, Col, DatePicker, Divider,
   Form, Input, InputNumber, Row, Select, message,
@@ -270,7 +270,7 @@ export default function BookVenue() {
                 block className="booking-submit"
                 disabled={!selectedEvent || alreadyBooked}
                 htmlType="submit"
-                icon={<CheckCircleOutlined />}
+                icon={<CheckCircle size={16} />}
                 loading={loading}
                 type="primary"
               >
@@ -285,7 +285,7 @@ export default function BookVenue() {
               {selectedEvent ? (
                 <div className="booking-summary">
                   <strong className="booking-summary__title">{selectedEvent.title}</strong>
-                  <span className="booking-summary__meta"><EnvironmentOutlined /> {selectedEvent.location}</span>
+                  <span className="booking-summary__meta"><MapPin size={16} /> {selectedEvent.location}</span>
                   <Divider />
                   <div className="booking-summary__row"><span>Venue Price:</span><strong>{formatPrice(selectedEvent.price)}</strong></div>
                   <div className="booking-summary__row"><span>Guest Cost ({guestCount} × {formatPrice(GUEST_PRICE)}):</span><strong>{formatPrice(guestCost)}</strong></div>

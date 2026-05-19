@@ -1,14 +1,2 @@
-body{
-margin:0;
-font-family: 'Segoe UI', sans-serif;
-background:#F6F7FB;
-}
-
-a{
-text-decoration:none;
-color:#555;
-}
-
-h2{
-margin:0;
-}
+/* App.css — Minimal overrides only. All design tokens live in index.css */
+/* Do not add base styles here — use theme-tokens.css and index.css instead */

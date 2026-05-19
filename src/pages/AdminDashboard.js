@@ -1,8 +1,11 @@
-// AdminDashboard.js — Admin panel
-// Tabs: Events (create/edit/delete), Bookings (view all)
-// All data comes from the PHP backend via API calls
+// AdminDashboard.js — Legacy admin panel (tab-based)
+// Uses lucide-react icons
 
 import { useState, useEffect } from "react";
+import {
+  CalendarDays, BookMarked, Plus, Edit3, Trash2,
+  CheckCircle, AlertCircle, LayoutDashboard,
+} from "lucide-react";
 import Navbar from "./Navbar";
 import API from "../services/api";
 import { getErrorMessage } from "../utils/apiError";
@@ -12,18 +15,15 @@ import "./DashboardShared.css";
 const emptyForm = { title: "", description: "", date: "", location: "", price: "", image: "" };
 
 export default function AdminDashboard() {
-  const [events, setEvents]     = useState([]);
-  const [bookings, setBookings] = useState([]);
+  const [events, setEvents]       = useState([]);
+  const [bookings, setBookings]   = useState([]);
   const [activeTab, setActiveTab] = useState("events");
-  const [feedback, setFeedback] = useState({ type: "", text: "" });
-
-  // Add/Edit event form
+  const [feedback, setFeedback]   = useState({ type: "", text: "" });
   const [showForm, setShowForm]   = useState(false);
   const [form, setForm]           = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Load events and bookings from backend
   const loadData = async () => {
     try {
       const [eventsRes, bookingsRes] = await Promise.all([
@@ -41,12 +41,10 @@ export default function AdminDashboard() {
 
   const resetForm = () => { setForm(emptyForm); setEditingId(null); setShowForm(false); };
 
-  // Create or update event
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFeedback({ type: "", text: "" });
     setSubmitting(true);
-
     const payload = {
       ...form,
       price: Number(form.price),
@@ -54,7 +52,6 @@ export default function AdminDashboard() {
       description: form.description.trim(),
       location: form.location.trim(),
     };
-
     try {
       if (editingId) {
         await API.put(`/events/${editingId}`, payload);
@@ -72,22 +69,17 @@ export default function AdminDashboard() {
     }
   };
 
-  // Start editing an event — fill form with existing data
   const startEdit = (event) => {
     setEditingId(event.id);
     setForm({
-      title: event.title,
-      description: event.description,
-      date: event.date,
-      location: event.location,
-      price: String(event.price),
-      image: event.image || "",
+      title: event.title, description: event.description,
+      date: event.date, location: event.location,
+      price: String(event.price), image: event.image || "",
     });
     setShowForm(true);
     setFeedback({ type: "", text: "" });
   };
 
-  // Delete an event
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this event? All bookings for it will also be removed.")) return;
     setFeedback({ type: "", text: "" });
@@ -101,38 +93,57 @@ export default function AdminDashboard() {
     }
   };
 
-  const msgStyle = (type) => ({
-    background: type === "error" ? "#FEE2E2" : "#D1FAE5",
-    color: type === "error" ? "#B91C1C" : "#065F46",
-    padding: "10px 14px", borderRadius: 8, marginBottom: 16, fontSize: 14,
-  });
-
   return (
     <div className="dash-page">
       <Navbar />
 
       <div className="dash-hero theme-header">
-        <h1 className="dash-hero-title">Admin Dashboard</h1>
+        <h1 className="dash-hero-title">
+          <LayoutDashboard size={22} />
+          Admin Dashboard
+        </h1>
         <p className="dash-hero-sub">Manage events and view all bookings.</p>
       </div>
 
       <div className="dash-content">
-
         {/* Stats */}
         <div className="dash-stats-row">
-          <div className="theme-stat-card"><div className="stat-label">Total Events</div><div className="stat-number">{events.length}</div></div>
-          <div className="theme-stat-card"><div className="stat-label">Total Bookings</div><div className="stat-number">{bookings.length}</div></div>
+          <div className="theme-stat-card">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+              <div className="stat-label">Total Events</div>
+              <CalendarDays size={18} color="#818CF8" />
+            </div>
+            <div className="stat-number">{events.length}</div>
+          </div>
+          <div className="theme-stat-card">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+              <div className="stat-label">Total Bookings</div>
+              <BookMarked size={18} color="#818CF8" />
+            </div>
+            <div className="stat-number">{bookings.length}</div>
+          </div>
         </div>
 
-        {/* Feedback message */}
-        {feedback.text && <div style={msgStyle(feedback.type)}>{feedback.text}</div>}
+        {/* Feedback */}
+        {feedback.text && (
+          <div className={`message ${feedback.type === "error" ? "message-error" : "message-success"}`}
+            style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {feedback.type === "error" ? <AlertCircle size={15} /> : <CheckCircle size={15} />}
+            {feedback.text}
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="dash-tabs">
-          {["events", "bookings"].map((tab) => (
-            <button key={tab} className={`dash-tab-btn ${activeTab === tab ? "active" : ""}`}
-              onClick={() => setActiveTab(tab)}>
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          {[
+            { key: "events",   label: "Events",   Icon: CalendarDays },
+            { key: "bookings", label: "Bookings", Icon: BookMarked },
+          ].map(({ key, label, Icon }) => (
+            <button key={key}
+              className={`dash-tab-btn ${activeTab === key ? "active" : ""}`}
+              onClick={() => setActiveTab(key)}>
+              <Icon size={14} />
+              {label}
             </button>
           ))}
         </div>
@@ -141,13 +152,18 @@ export default function AdminDashboard() {
         {activeTab === "events" && (
           <div className="theme-card">
             <div className="dash-tab-header">
-              <h2 className="theme-section-title" style={{ margin: 0 }}>Manage Events ({events.length})</h2>
-              <button className="theme-btn" onClick={() => { resetForm(); setShowForm(!showForm); }}>
+              <h2 className="theme-section-title" style={{ margin: 0 }}>
+                <CalendarDays size={18} />
+                Manage Events ({events.length})
+              </h2>
+              <button className="theme-btn"
+                onClick={() => { resetForm(); setShowForm(!showForm); }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <Plus size={15} />
                 {showForm ? "Cancel" : "Add Event"}
               </button>
             </div>
 
-            {/* Add / Edit Form */}
             {showForm && (
               <form className="dash-add-form" onSubmit={handleSubmit}>
                 <div className="dash-form-row">
@@ -184,13 +200,15 @@ export default function AdminDashboard() {
                   <input type="url" className="theme-input" placeholder="https://example.com/image.jpg"
                     value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
                 </div>
-                <button type="submit" className="theme-btn" disabled={submitting} style={{ marginTop: 8 }}>
-                  {submitting ? "Saving..." : editingId ? "Update Event" : "Create Event"}
+                <button type="submit" className="theme-btn" disabled={submitting}
+                  style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  {submitting ? "Saving..." : editingId
+                    ? <><Edit3 size={14} /> Update Event</>
+                    : <><Plus size={14} /> Create Event</>}
                 </button>
               </form>
             )}
 
-            {/* Events Table */}
             <div className="dash-table-wrap">
               <table className="dash-table">
                 <thead>
@@ -198,7 +216,9 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody>
                   {events.length === 0 ? (
-                    <tr><td colSpan={5} style={{ textAlign: "center", color: "#9CA3AF", padding: 24 }}>No events yet. Add one above.</td></tr>
+                    <tr><td colSpan={5} style={{ textAlign: "center", color: "#9CA3AF", padding: 24 }}>
+                      No events yet. Add one above.
+                    </td></tr>
                   ) : events.map((ev) => (
                     <tr key={ev.id}>
                       <td>{ev.title}</td>
@@ -206,8 +226,14 @@ export default function AdminDashboard() {
                       <td>{ev.date}</td>
                       <td>Rs. {Number(ev.price).toLocaleString()}</td>
                       <td>
-                        <button className="dash-table-btn edit" onClick={() => startEdit(ev)}>Edit</button>
-                        <button className="dash-table-btn delete" onClick={() => handleDelete(ev.id)}>Delete</button>
+                        <button className="dash-table-btn edit" onClick={() => startEdit(ev)}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                          <Edit3 size={12} /> Edit
+                        </button>
+                        <button className="dash-table-btn delete" onClick={() => handleDelete(ev.id)}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                          <Trash2 size={12} /> Delete
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -220,7 +246,10 @@ export default function AdminDashboard() {
         {/* ── BOOKINGS TAB ── */}
         {activeTab === "bookings" && (
           <div className="theme-card">
-            <h2 className="theme-section-title">All Bookings ({bookings.length})</h2>
+            <h2 className="theme-section-title">
+              <BookMarked size={18} />
+              All Bookings ({bookings.length})
+            </h2>
             {bookings.length === 0 ? (
               <div className="dash-empty"><p>No bookings yet.</p></div>
             ) : (
@@ -246,7 +275,6 @@ export default function AdminDashboard() {
             )}
           </div>
         )}
-
       </div>
     </div>
   );

@@ -1,14 +1,16 @@
-/**
- * ToastContainer — renders floating toast notifications.
- * Receives toasts array from useToast hook.
- */
+// ToastContainer — renders floating toast notifications.
+// Receives toasts array from useToast hook.
+// Uses lucide-react icons.
+
+import { CheckCircle, XCircle, Info } from "lucide-react";
+
 function ToastContainer({ toasts }) {
   if (!toasts || toasts.length === 0) return null;
 
   const iconMap = {
-    success: "✅",
-    error: "❌",
-    info: "💜",
+    success: <CheckCircle size={16} />,
+    error:   <XCircle size={16} />,
+    info:    <Info size={16} />,
   };
 
   return (
@@ -19,7 +21,9 @@ function ToastContainer({ toasts }) {
           className={`otp-toast otp-toast--${toast.type}`}
           role="alert"
         >
-          <span className="otp-toast__icon">{iconMap[toast.type] || "ℹ️"}</span>
+          <span className="otp-toast__icon">
+            {iconMap[toast.type] || <Info size={16} />}
+          </span>
           <span>{toast.message}</span>
         </div>
       ))}

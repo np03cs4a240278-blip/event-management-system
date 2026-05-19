@@ -1,10 +1,18 @@
-// Register.js — Sign up page with OTP verification flow
+// Register.js — Sign up page with lucide-react icons
 
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import {
+  UserCircle,
+  Mail,
+  Lock,
+  UserPlus,
+  Sparkles,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/apiError";
-import myLogo from "../assets/mylogo.png";
 import "./theme.css";
 import "./Login.css";
 
@@ -12,13 +20,13 @@ export default function Register() {
   const { user, loading, register } = useAuth();
   const navigate = useNavigate();
 
-  const [name, setName]                       = useState("");
-  const [email, setEmail]                     = useState("");
-  const [password, setPassword]               = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError]                     = useState("");
-  const [success, setSuccess]                 = useState("");
-  const [submitting, setSubmitting]           = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -31,17 +39,27 @@ export default function Register() {
     setError("");
     setSuccess("");
 
-    if (password !== confirmPassword) { setError("Passwords do not match."); return; }
-    if (password.length < 6)          { setError("Password must be at least 6 characters."); return; }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
 
     setSubmitting(true);
     try {
-      await register({ name, email, password, role: "user" });
-      setSuccess("Account created! Sending OTP to your email...");
-      // Navigate to OTP verification page with registration context
+      const response = await register({ name, email, password, role: "user" });
+      setSuccess(
+        response?.message || "Account created successfully. Please login to continue.",
+      );
       setTimeout(() => {
-        navigate("/verify-otp", {
-          state: { email, userName: name, context: "registration", redirectTo: "/login" },
+        navigate("/login", {
+          replace: true,
+          state: {
+            message: response?.message || "Account created successfully. Please login to continue.",
+          },
         });
       }, 800);
     } catch (err) {
@@ -53,10 +71,15 @@ export default function Register() {
 
   return (
     <div className="login-page">
+      {/* Header banner */}
       <div className="login-header theme-header">
-        <Link to="/" style={{ display: "block", width: "fit-content", margin: "0 auto 8px" }}>
-          <img src={myLogo} alt="Event Management System" style={{ height: 70, width: "auto", display: "block" }} />
-        </Link>
+        <div
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 8, cursor: "pointer" }}
+          onClick={() => navigate("/")}
+        >
+          <Sparkles size={28} color="#1E1B4B" />
+          <span style={{ fontSize: 22, fontWeight: 800, color: "#1E1B4B" }}>EventPro</span>
+        </div>
         <p className="site-tagline">Create your account to get started</p>
       </div>
 
@@ -65,43 +88,106 @@ export default function Register() {
           <h2 className="login-title">Sign Up</h2>
           <p className="login-sub">Fill in your details below</p>
 
-          {error   && <div className="login-error">{error}</div>}
-          {success && <div className="login-success">{success}</div>}
+          {error && (
+            <div className="login-error" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <AlertCircle size={15} />
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="login-success" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <CheckCircle size={15} />
+              {success}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
+            {/* Full Name */}
             <div className="form-group">
-              <label className="form-label">Full Name *</label>
-              <input type="text" className="theme-input" placeholder="Enter your full name"
-                value={name} onChange={(e) => setName(e.target.value)} required />
+              <label className="form-label" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <UserCircle size={14} />
+                Full Name *
+              </label>
+              <input
+                type="text"
+                className="theme-input"
+                placeholder="Enter your full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
             </div>
+
+            {/* Email */}
             <div className="form-group">
-              <label className="form-label">Email Address *</label>
-              <input type="email" className="theme-input" placeholder="you@gmail.com"
-                value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <label className="form-label" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <Mail size={14} />
+                Email Address *
+              </label>
+              <input
+                type="email"
+                className="theme-input"
+                placeholder="you@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
+
+            {/* Password */}
             <div className="form-group">
-              <label className="form-label">Password *</label>
-              <input type="password" className="theme-input" placeholder="Minimum 6 characters"
-                autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <label className="form-label" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <Lock size={14} />
+                Password *
+              </label>
+              <input
+                type="password"
+                className="theme-input"
+                placeholder="Minimum 6 characters"
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </div>
+
+            {/* Confirm Password */}
             <div className="form-group">
-              <label className="form-label">Confirm Password *</label>
-              <input type="password" className="theme-input" placeholder="Re-enter your password"
-                autoComplete="new-password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+              <label className="form-label" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <Lock size={14} />
+                Confirm Password *
+              </label>
+              <input
+                type="password"
+                className="theme-input"
+                placeholder="Re-enter your password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
             </div>
 
             <p className="login-sub" style={{ margin: "0 0 16px", textAlign: "left" }}>
               New registrations are created as user accounts.
             </p>
 
-            <button type="submit" className="theme-btn login-submit-btn" disabled={submitting}>
+            <button
+              type="submit"
+              className="theme-btn login-submit-btn"
+              disabled={submitting}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+            >
+              <UserPlus size={16} />
               {submitting ? "Creating account..." : "Sign Up"}
             </button>
           </form>
 
           <p className="login-footer-text">
             Already have an account?{" "}
-            <Link to="/login" className="theme-link">Login</Link>
+            <Link to="/login" className="theme-link">
+              Login
+            </Link>
           </p>
         </div>
       </div>

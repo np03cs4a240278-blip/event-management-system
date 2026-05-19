@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Calendar, Ticket, Users, BarChart } from "lucide-react";
 import API from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/apiError";
@@ -7,7 +8,6 @@ import { formatDate, formatPrice } from "../utils/formatters";
 
 function getWorkspaceRoute(user) {
   if (!user) return "/login";
-  if (user.must_change_password) return "/profile";
   return user.role === "admin" ? "/admin/dashboard" : "/user-dashboard";
 }
 
@@ -178,22 +178,22 @@ function LandingPage() {
 
         <div className="features-grid">
           <div className="feature-card">
-            <div className="feature-icon">📅</div>
+            <div className="feature-icon"><Calendar size={32} /></div>
             <h3>Event Scheduling</h3>
             <p>Multiple sessions, recurring events, and flexible timing options.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">🎟️</div>
+            <div className="feature-icon"><Ticket size={32} /></div>
             <h3>Smart Ticketing</h3>
             <p>Early bird pricing, promo codes, and capacity management.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">👥</div>
+            <div className="feature-icon"><Users size={32} /></div>
             <h3>Attendee Management</h3>
             <p>Track registrations, send reminders, and manage waitlists.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">📊</div>
+            <div className="feature-icon"><BarChart size={32} /></div>
             <h3>Analytics Dashboard</h3>
             <p>Real-time insights on ticket sales and attendee engagement.</p>
           </div>

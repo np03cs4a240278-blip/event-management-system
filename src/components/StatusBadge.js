@@ -1,6 +1,7 @@
-// StatusBadge.js — Color-coded booking status labels
+// StatusBadge.js — Color-coded booking status labels with icons
 // Statuses: confirmed, cancelled, completed, pending
 
+import { CheckCircle, XCircle, Clock, Star } from "lucide-react";
 import "../styles/statusbadge.css";
 
 /**
@@ -11,7 +12,6 @@ import "../styles/statusbadge.css";
 export function deriveStatus(booking) {
   if (!booking) return "pending";
 
-  // Use event date to determine if the event has passed
   const eventDateStr = booking.event_date || booking.event?.date;
   if (eventDateStr && booking.status !== "cancelled") {
     const eventDate = new Date(`${eventDateStr}T23:59:59`);
@@ -22,16 +22,19 @@ export function deriveStatus(booking) {
 }
 
 const STATUS_CONFIG = {
-  confirmed:  { label: "Confirmed",  className: "badge--confirmed"  },
-  cancelled:  { label: "Cancelled",  className: "badge--cancelled"  },
-  completed:  { label: "Completed",  className: "badge--completed"  },
-  pending:    { label: "Pending",    className: "badge--pending"    },
+  confirmed: { label: "Confirmed", className: "badge--confirmed", Icon: CheckCircle },
+  cancelled: { label: "Cancelled", className: "badge--cancelled", Icon: XCircle },
+  completed: { label: "Completed", className: "badge--completed", Icon: Star },
+  pending:   { label: "Pending",   className: "badge--pending",   Icon: Clock },
 };
 
 function StatusBadge({ status }) {
   const config = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+  const { Icon } = config;
+
   return (
-    <span className={`status-badge ${config.className}`}>
+    <span className={`status-badge ${config.className}`} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+      <Icon size={11} />
       {config.label}
     </span>
   );
