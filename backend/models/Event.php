@@ -10,7 +10,7 @@ class Event
         $this->database = $database;
     }
 
-    public function all(?string $search = null, ?string $location = null): array
+    public function all(?string $search = null, ?string $location = null, ?string $category = null): array
     {
         $sql = 'SELECT * FROM events WHERE 1=1';
         $params = [];
@@ -23,6 +23,11 @@ class Event
         if ($location !== null && $location !== '') {
             $sql .= ' AND location LIKE :location';
             $params['location'] = '%' . $location . '%';
+        }
+
+        if ($category !== null && $category !== '') {
+            $sql .= ' AND category = :category';
+            $params['category'] = $category;
         }
 
         $sql .= ' ORDER BY date ASC, created_at DESC';
@@ -45,11 +50,12 @@ class Event
     public function create(array $data): array
     {
         $statement = $this->database->prepare(
-            'INSERT INTO events (title, description, date, location, price, image)
-             VALUES (:title, :description, :date, :location, :price, :image)'
+            'INSERT INTO events (title, category, description, date, location, price, image)
+             VALUES (:title, :category, :description, :date, :location, :price, :image)'
         );
         $statement->execute([
             'title' => $data['title'],
+            'category' => $data['category'],
             'description' => $data['description'],
             'date' => $data['date'],
             'location' => $data['location'],
@@ -71,6 +77,7 @@ class Event
         $statement = $this->database->prepare(
             'UPDATE events
              SET title = :title,
+                 category = :category,
                  description = :description,
                  date = :date,
                  location = :location,
@@ -81,6 +88,7 @@ class Event
         $statement->execute([
             'id' => $id,
             'title' => $data['title'],
+            'category' => $data['category'],
             'description' => $data['description'],
             'date' => $data['date'],
             'location' => $data['location'],
@@ -108,6 +116,7 @@ class Event
         return [
             'id' => (int) $event['id'],
             'title' => $event['title'],
+            'category' => $event['category'] ?? 'General',
             'description' => $event['description'],
             'date' => $event['date'],
             'location' => $event['location'],

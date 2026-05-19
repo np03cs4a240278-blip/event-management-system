@@ -14,8 +14,9 @@ class EventController
     {
         $search = $_GET['search'] ?? null;
         $location = $_GET['location'] ?? null;
+        $category = $_GET['category'] ?? null;
 
-        $events = $this->events->all($search, $location);
+        $events = $this->events->all($search, $location, $category);
 
         jsonResponse(['events' => $events]);
     }
@@ -84,13 +85,14 @@ class EventController
     private function validateEventData($data)
     {
         $title = trim($data['title'] ?? '');
+        $category = trim($data['category'] ?? 'General');
         $description = trim($data['description'] ?? '');
         $date = trim($data['date'] ?? '');
         $location = trim($data['location'] ?? '');
         $image = trim($data['image'] ?? '');
         $price = $data['price'] ?? null;
 
-        if ($title === '' || $description === '' || $date === '' || $location === '' || $price === null || $price === '') {
+        if ($title === '' || $category === '' || $description === '' || $date === '' || $location === '' || $price === null || $price === '') {
             jsonResponse(['message' => 'All fields except image are required'], 422);
         }
 
@@ -112,6 +114,7 @@ class EventController
 
         return [
             'title' => $title,
+            'category' => $category,
             'description' => $description,
             'date' => $date,
             'location' => $location,

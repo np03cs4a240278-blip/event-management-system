@@ -14,10 +14,7 @@ class User
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
         $stmt->execute(['email' => $email]);
-<<<<<<< HEAD
-=======
 
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
         return $stmt->fetch() ?: null;
     }
 
@@ -26,56 +23,119 @@ class User
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
         $stmt->execute(['id' => $id]);
-<<<<<<< HEAD
-        return $stmt->fetch() ?: null;
-    }
-
-    // Get all users (admin use)
-=======
 
         return $stmt->fetch() ?: null;
     }
 
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
     public function allPublicUsers()
     {
         $stmt = $this->db->query("SELECT * FROM users ORDER BY created_at DESC, id DESC");
         $users = $stmt->fetchAll() ?: [];
-<<<<<<< HEAD
-=======
 
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
         return array_map([$this, 'toPublicUser'], $users);
     }
 
-    // Create new user
-    public function create($name, $email, $password, $role = 'user')
+    public function updateAccountStatus($id, $status)
     {
         $stmt = $this->db->prepare(
-<<<<<<< HEAD
-            "INSERT INTO users (name, email, password, role)
-             VALUES (:name, :email, :password, :role)"
+            "UPDATE users
+             SET account_status = :account_status,
+                 deactivated_at = :deactivated_at
+             WHERE id = :id"
         );
-        $stmt->execute([
-            'name'     => $name,
-            'email'    => $email,
-            'password' => $password,
-            'role'     => $role
+
+        return $stmt->execute([
+            'id' => $id,
+            'account_status' => $status,
+            'deactivated_at' => $status === 'deactivated' ? date('Y-m-d H:i:s') : null
         ]);
-=======
-            "INSERT INTO users (name, email, password, role) 
-             VALUES (:name, :email, :password, :role)"
+    }
+
+    public function deleteById($id)
+    {
+        $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");
+
+        return $stmt->execute(['id' => $id]);
+    }
+
+    // Create new user
+    public function create($name, $email, $password, $role = 'user', $isVerified = false)
+    {
+        $stmt = $this->db->prepare(
+            "INSERT INTO users (
+                name, email, password, role, is_verified, verified_at, otp_code_hash, otp_expires_at, otp_last_sent_at, otp_purpose
+            ) VALUES (
+                :name, :email, :password, :role, :is_verified, :verified_at, :otp_code_hash, :otp_expires_at, :otp_last_sent_at, :otp_purpose
+            )"
         );
 
         $stmt->execute([
             'name' => $name,
             'email' => $email,
             'password' => $password,
-            'role' => $role
+            'role' => $role,
+            'is_verified' => $isVerified ? 1 : 0,
+            'verified_at' => $isVerified ? date('Y-m-d H:i:s') : null,
+            'otp_code_hash' => null,
+            'otp_expires_at' => null,
+            'otp_last_sent_at' => null,
+            'otp_purpose' => null,
         ]);
 
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
         return $this->findById($this->db->lastInsertId());
+    }
+
+    public function storeOtpChallenge($id, $otpPurpose, $otpCodeHash, $otpExpiresAt, $otpLastSentAt)
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE users
+             SET otp_code_hash = :otp_code_hash,
+                 otp_expires_at = :otp_expires_at,
+                 otp_last_sent_at = :otp_last_sent_at,
+                 otp_purpose = :otp_purpose
+             WHERE id = :id"
+        );
+
+        return $stmt->execute([
+            'id' => $id,
+            'otp_purpose' => $otpPurpose,
+            'otp_code_hash' => $otpCodeHash,
+            'otp_expires_at' => $otpExpiresAt,
+            'otp_last_sent_at' => $otpLastSentAt,
+        ]);
+    }
+
+    public function clearOtpChallenge($id)
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE users
+             SET otp_code_hash = NULL,
+                 otp_expires_at = NULL,
+                 otp_last_sent_at = NULL,
+                 otp_purpose = NULL
+             WHERE id = :id"
+        );
+
+        return $stmt->execute(['id' => $id]);
+    }
+
+    public function markAsVerified($id)
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE users
+             SET is_verified = 1,
+                 verified_at = :verified_at,
+                 otp_code_hash = NULL,
+                 otp_expires_at = NULL,
+                 otp_last_sent_at = NULL,
+                 otp_purpose = NULL
+             WHERE id = :id"
+        );
+
+        return $stmt->execute([
+            'id' => $id,
+            'verified_at' => date('Y-m-d H:i:s'),
+        ]);
     }
 
     // Update password by email
@@ -84,15 +144,11 @@ class User
         $stmt = $this->db->prepare(
             "UPDATE users SET password = :password WHERE email = :email"
         );
-<<<<<<< HEAD
-        return $stmt->execute(['email' => $email, 'password' => $password]);
-=======
 
         return $stmt->execute([
             'email' => $email,
             'password' => $password
         ]);
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
     }
 
     // Update password by user ID
@@ -101,70 +157,26 @@ class User
         $stmt = $this->db->prepare(
             "UPDATE users SET password = :password WHERE id = :id"
         );
-<<<<<<< HEAD
-        return $stmt->execute(['id' => $id, 'password' => $password]);
-=======
 
         return $stmt->execute([
             'id' => $id,
             'password' => $password
         ]);
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
-    }
-
-    // Set must_change_password by email
-    public function setMustChangePasswordByEmail($email, $value)
-    {
-        $stmt = $this->db->prepare(
-            "UPDATE users SET must_change_password = :value WHERE email = :email"
-        );
-<<<<<<< HEAD
-        return $stmt->execute(['email' => $email, 'value' => $value ? 1 : 0]);
-=======
-
-        return $stmt->execute([
-            'email' => $email,
-            'value' => $value ? 1 : 0
-        ]);
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
-    }
-
-    // Set must_change_password by user ID
-    public function setMustChangePasswordById($id, $value)
-    {
-        $stmt = $this->db->prepare(
-            "UPDATE users SET must_change_password = :value WHERE id = :id"
-        );
-<<<<<<< HEAD
-        return $stmt->execute(['id' => $id, 'value' => $value ? 1 : 0]);
-=======
-
-        return $stmt->execute([
-            'id' => $id,
-            'value' => $value ? 1 : 0
-        ]);
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
     }
 
     // Return safe user data (without password)
     public function toPublicUser($user)
     {
         return [
-<<<<<<< HEAD
-            'id'                   => (int)$user['id'],
-            'name'                 => $user['name'],
-            'email'                => $user['email'],
-            'role'                 => $user['role'],
-            'must_change_password' => (bool)($user['must_change_password'] ?? 0),
-            'created_at'           => $user['created_at'] ?? null
-=======
             'id' => (int)$user['id'],
             'name' => $user['name'],
             'email' => $user['email'],
+            'account_status' => $user['account_status'] ?? 'active',
+            'deactivated_at' => $user['deactivated_at'] ?? null,
             'role' => $user['role'],
-            'must_change_password' => (bool)($user['must_change_password'] ?? 0),
+            'is_verified' => (bool)($user['is_verified'] ?? 1),
+            'verified_at' => $user['verified_at'] ?? null,
             'created_at' => $user['created_at'] ?? null
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
         ];
     }
 }

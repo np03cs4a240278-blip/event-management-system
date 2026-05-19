@@ -1,0 +1,152 @@
+============================================================
+Sent at: 2026-05-18 04:19:29
+To: rabin@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 303201
+Expires in: 10 minutes
+============================================================
+============================================================
+Sent at: 2026-05-18 04:21:16
+To: rabin@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 756798
+Expires in: 10 minutes
+============================================================
+============================================================
+Sent at: 2026-05-18 04:30:22
+To: rabin@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 745184
+Expires in: 10 minutes
+============================================================
+============================================================
+Sent at: 2026-05-18 13:19:21
+To: rabin@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 730664
+Expires in: 10 minutes
+============================================================
+============================================================
+Sent at: 2026-05-18 13:25:56
+To: rabin@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 680600
+Expires in: 10 minutes
+============================================================
+============================================================
+Sent at: 2026-05-18 13:33:03
+To: khadkarabin9805@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 258621
+Expires in: 10 minutes
+============================================================
+============================================================
+Sent at: 2026-05-18 13:42:13
+To: khadkarabin9805@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 312841
+Expires in: 2 minutes
+============================================================
+============================================================
+Sent at: 2026-05-18 13:54:26
+To: khadkarabin9805@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 646718
+Expires in: 2 minutesSend method: php_mail
+Mail status: failure
+PHP mail last error: {"type":2,"message":"mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set()","file":"C:\\xampp1\\htdocs\\event-management-system\\backend\\helpers\\mailer.php","line":93}
+============================================================
+============================================================
+Sent at: 2026-05-18 13:55:37
+To: khadkarabin9805@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 792714
+Expires in: 2 minutesSend method: php_mail
+Mail status: failure
+PHP mail last error: {"type":2,"message":"mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set()","file":"C:\\xampp1\\htdocs\\event-management-system\\backend\\helpers\\mailer.php","line":93}
+============================================================
+============================================================
+Sent at: 2026-05-18 13:58:48
+To: khadkarabin9805@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 636266
+Expires in: 2 minutes
+SMTP error: SMTP password rejected: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-83f19775c97sm14869856b3a.15 - gsmtp\nSend method: smtp
+Mail status: failure
+PHP mail last error: {"type":2,"message":"mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set()","file":"C:\\xampp1\\htdocs\\event-management-system\\backend\\helpers\\mailer.php","line":93}
+============================================================
+============================================================
+Sent at: 2026-05-18 14:09:25
+To: kinawaseijuro@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+OTP: 712875
+Expires in: 2 minutes
+SMTP error: SMTP password rejected: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-83f19c5c39esm17086898b3a.36 - gsmtp\nSend method: smtp
+Mail status: failure
+PHP mail last error: {"type":2,"message":"mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set()","file":"C:\\xampp1\\htdocs\\event-management-system\\backend\\helpers\\mailer.php","line":93}
+============================================================
+============================================================
+Sent at: 2026-05-18 14:44:15
+To: khadkarabin9805@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+Expires in: 2 minutes
+Send method: smtp
+Mail status: success
+============================================================
+============================================================
+Sent at: 2026-05-18 14:45:45
+To: kinawaseijuro@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+Expires in: 2 minutes
+Send method: smtp
+Mail status: success
+============================================================
+============================================================
+Sent at: 2026-05-18 14:51:40
+To: anojrai6123@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+Expires in: 2 minutes
+Send method: smtp
+Mail status: success
+============================================================
+============================================================
+Sent at: 2026-05-18 14:53:50
+To: anojrai6123@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+Expires in: 2 minutes
+Send method: smtp
+Mail status: success
+============================================================
+============================================================
+Sent at: 2026-05-18 15:48:12
+To: khadkarabin9805@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+Expires in: 2 minutes
+Send method: smtp
+Mail status: success
+============================================================
+============================================================
+Sent at: 2026-05-19 04:03:12
+To: khadkarabin9805@gmail.com
+Subject: Your Event Management Password Reset OTP
+Purpose: password_reset
+Expires in: 2 minutes
+Send method: smtp
+Mail status: success
+============================================================

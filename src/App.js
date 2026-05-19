@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ContactProvider } from "./context/ContactContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Public pages
@@ -20,6 +21,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminBookings  from "./pages/admin/Bookings";
 import ManageEvents   from "./pages/admin/ManageEvents";
 import ManageUsers    from "./pages/admin/ManageUsers";
+import ContactMessages from "./pages/admin/ContactMessages";
 import Profile        from "./pages/Profile";
 import UserBookings   from "./pages/user/Bookings";
 import Events         from "./pages/user/Events";
@@ -27,6 +29,7 @@ import Events         from "./pages/user/Events";
 function App() {
   return (
     <AuthProvider>
+      <ContactProvider>
       <BrowserRouter>
         <Routes>
           {/* Public */}
@@ -49,11 +52,12 @@ function App() {
 
           {/* Admin routes */}
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/events"    element={<ManageEvents />} />
-            <Route path="/admin/bookings"  element={<AdminBookings />} />
-            <Route path="/admin/users"     element={<ManageUsers />} />
+            <Route path="/admin/dashboard"  element={<AdminDashboard />} />
+            <Route path="/admin-dashboard"  element={<AdminDashboard />} />
+            <Route path="/admin/events"     element={<ManageEvents />} />
+            <Route path="/admin/bookings"   element={<AdminBookings />} />
+            <Route path="/admin/users"      element={<ManageUsers />} />
+            <Route path="/admin/messages"   element={<ContactMessages />} />
           </Route>
 
           {/* Shared protected */}
@@ -64,6 +68,7 @@ function App() {
           <Route path="*" element={<Navigate replace to="/" />} />
         </Routes>
       </BrowserRouter>
+      </ContactProvider>
     </AuthProvider>
   );
 }

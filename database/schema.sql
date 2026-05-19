@@ -6,7 +6,15 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    account_status ENUM('active', 'deactivated') NOT NULL DEFAULT 'active',
+    deactivated_at TIMESTAMP NULL DEFAULT NULL,
     must_change_password TINYINT(1) NOT NULL DEFAULT 0,
+    is_verified TINYINT(1) NOT NULL DEFAULT 0,
+    verified_at TIMESTAMP NULL DEFAULT NULL,
+    otp_code_hash VARCHAR(255) NULL DEFAULT NULL,
+    otp_expires_at TIMESTAMP NULL DEFAULT NULL,
+    otp_last_sent_at TIMESTAMP NULL DEFAULT NULL,
+    otp_purpose VARCHAR(50) NULL DEFAULT NULL,
     role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -14,6 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS events (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(150) NOT NULL,
+    category VARCHAR(100) NOT NULL DEFAULT 'General',
     description TEXT NOT NULL,
     date DATE NOT NULL,
     location VARCHAR(150) NOT NULL,
@@ -23,10 +32,6 @@ CREATE TABLE IF NOT EXISTS events (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-<<<<<<< HEAD
--- Full bookings table with all booking details
-=======
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
 CREATE TABLE IF NOT EXISTS bookings (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id INT UNSIGNED NOT NULL,
@@ -54,10 +59,6 @@ CREATE TABLE IF NOT EXISTS bookings (
     CONSTRAINT unique_user_event UNIQUE (user_id, event_id)
 );
 
-<<<<<<< HEAD
--- Contact messages from the landing page
-=======
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
 CREATE TABLE IF NOT EXISTS contact_messages (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,

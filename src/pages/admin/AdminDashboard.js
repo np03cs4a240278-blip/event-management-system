@@ -14,9 +14,11 @@ import {
   LayoutDashboard,
   ArrowRight,
   ShieldCheck,
+  MessageSquare,
 } from "lucide-react";
 import AppShell from "../../components/AppShell";
 import { useAuth } from "../../context/AuthContext";
+import { useContact } from "../../context/ContactContext";
 import API from "../../services/api";
 import { getErrorMessage } from "../../utils/apiError";
 import { formatDate, formatPrice } from "../../utils/formatters";
@@ -55,7 +57,8 @@ function StatCard({ label, value, sub, accent, Icon }) {
 }
 
 function AdminDashboard() {
-  const { user } = useAuth();
+  const { user }        = useAuth();
+  const { unreadCount } = useContact();
   const [events, setEvents]     = useState([]);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -122,14 +125,34 @@ function AdminDashboard() {
         <StatCard label="Total Bookings" value={bookings.length}      sub={`${uniqueUsers} unique users`}    accent="#7c3aed" Icon={BookMarked} />
         <StatCard label="Confirmed"      value={confirmed}            sub={`${pending} pending`}             accent="#027a48" Icon={CheckCircle} />
         <StatCard label="Total Revenue"  value={`Rs. ${totalRevenue.toLocaleString()}`} sub="from all bookings" accent="#be185d" Icon={DollarSign} />
+        {/* Unread contact messages card */}
+        <article
+          className="stat-card"
+          style={{ borderTop: "4px solid #9D174D", cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
+          onClick={() => window.location.href = "/admin/messages"}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(165,180,252,0.2)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = ""; }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <span className="stat-card__label">Unread Messages</span>
+            <span style={{ background: "#FDF2F8", borderRadius: 8, padding: "4px 6px", display: "flex" }}>
+              <MessageSquare size={16} color="#9D174D" />
+            </span>
+          </div>
+          <strong style={{ color: "#9D174D" }}>{unreadCount}</strong>
+          <span style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", marginTop: 4, display: "block" }}>
+            {unreadCount > 0 ? "needs attention" : "all caught up"}
+          </span>
+        </article>
       </section>
 
       {/* Quick links */}
       <section className="card-grid">
         {[
-          { eyebrow: "Catalog",    title: "Manage Events",  desc: "Add, edit, or remove event listings.",                    to: "/admin/events",    Icon: CalendarDays },
-          { eyebrow: "Operations", title: "All Bookings",   desc: "Review every booking, confirm or remove entries.",        to: "/admin/bookings",  Icon: BookMarked },
-          { eyebrow: "Users",      title: "Manage Users",   desc: "View all registered accounts and their roles.",           to: "/admin/users",     Icon: Users },
+          { eyebrow: "Catalog",    title: "Manage Events",    desc: "Add, edit, or remove event listings.",                    to: "/admin/events",    Icon: CalendarDays },
+          { eyebrow: "Operations", title: "All Bookings",     desc: "Review every booking, confirm or remove entries.",        to: "/admin/bookings",  Icon: BookMarked },
+          { eyebrow: "Users",      title: "Manage Users",     desc: "View all registered accounts and their roles.",           to: "/admin/users",     Icon: Users },
+          { eyebrow: "Inbox",      title: "Contact Messages", desc: `${unreadCount > 0 ? `${unreadCount} unread message${unreadCount !== 1 ? "s" : ""} waiting.` : "All messages from the contact form."}`, to: "/admin/messages",  Icon: MessageSquare },
         ].map(({ eyebrow, title, desc, to, Icon }) => (
           <article className="panel" key={to}>
             <p className="eyebrow">{eyebrow}</p>

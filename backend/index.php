@@ -1,57 +1,67 @@
 <?php
 
-function isPrivateOrLoopbackAddress($host)
+function loadDotEnv(array $searchPaths): void
 {
-    if (!filter_var($host, FILTER_VALIDATE_IP)) {
-        return false;
-    }
+    foreach ($searchPaths as $path) {
+        if (!is_readable($path) || !is_file($path)) {
+            continue;
+        }
 
-    if ($host === '127.0.0.1' || $host === '::1') {
-        return true;
-    }
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-    return !filter_var(
-        $host,
-        FILTER_VALIDATE_IP,
-        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
-    );
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || $line[0] === '#') {
+                continue;
+            }
+
+            if (strpos($line, '=') === false) {
+                continue;
+            }
+
+            [$key, $value] = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
+
+            if ($key === '') {
+                continue;
+            }
+
+            if (preg_match('/^(["\'])(.*)\1$/', $value, $matches)) {
+                $value = $matches[2];
+            }
+
+            $value = str_replace('\\n', "\n", $value);
+
+            if (getenv($key) !== false || isset($_ENV[$key])) {
+                continue;
+            }
+
+            putenv("{$key}={$value}");
+            $_ENV[$key] = $value;
+            $_SERVER[$key] = $value;
+        }
+    }
 }
+
+loadDotEnv([
+    dirname(__DIR__) . '/.env',
+    __DIR__ . '/.env',
+]);
 
 function getAllowedOrigins()
 {
     $rawOrigins = getenv('ALLOWED_ORIGINS') ?: '';
-<<<<<<< HEAD
-    if ($rawOrigins === '') return [];
-=======
 
     if ($rawOrigins === '') {
         return [];
     }
 
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
     return array_values(array_filter(array_map('trim', explode(',', $rawOrigins))));
 }
 
 function isAllowedFrontendOrigin($origin)
 {
-<<<<<<< HEAD
-    if ($origin === '') return false;
-
-    if (in_array($origin, getAllowedOrigins(), true)) return true;
-
-    $parts = parse_url($origin);
-    if (!$parts || empty($parts['scheme']) || empty($parts['host'])) return false;
-    if (!in_array(strtolower($parts['scheme']), ['http', 'https'], true)) return false;
-
-    $host = strtolower($parts['host']);
-
-    if (in_array($host, ['localhost', '127.0.0.1', '::1'], true)) return true;
-    if (substr($host, -6) === '.local') return true;
-    if (isPrivateOrLoopbackAddress($host)) return true;
-
-    $serverHostHeader = $_SERVER['HTTP_HOST'] ?? '';
-    $serverHost       = strtolower(explode(':', $serverHostHeader)[0] ?? '');
-=======
     if ($origin === '') {
         return false;
     }
@@ -86,29 +96,18 @@ function isAllowedFrontendOrigin($origin)
 
     $serverHostHeader = $_SERVER['HTTP_HOST'] ?? '';
     $serverHost = strtolower(explode(':', $serverHostHeader)[0] ?? '');
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
 
     return $serverHost !== '' && $host === $serverHost;
 }
 
-<<<<<<< HEAD
-// Configure session cookie with secure defaults
-=======
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
 $sessionLifetime = (int)(getenv('SESSION_LIFETIME') ?: 86400);
 $isSecureRequest = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
 
 session_set_cookie_params([
     'lifetime' => $sessionLifetime,
-<<<<<<< HEAD
-    'path'     => '/',
-    'domain'   => '',
-    'secure'   => $isSecureRequest,
-=======
     'path' => '/',
     'domain' => '',
     'secure' => $isSecureRequest,
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
     'httponly' => true,
     'samesite' => 'Lax',
 ]);
@@ -131,12 +130,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
     exit;
 }
 
-<<<<<<< HEAD
-// Load helpers, config, middleware, models, controllers, and routes
-=======
 // Load files
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
 require 'helpers/response.php';
+require 'helpers/mailer.php';
 require 'config/db.php';
 require 'middleware/auth.php';
 require 'models/User.php';
@@ -148,23 +144,10 @@ require 'controllers/UserController.php';
 require 'controllers/EventController.php';
 require 'controllers/BookingController.php';
 require 'controllers/ContactMessageController.php';
+require 'controllers/RecommendationController.php';
 require 'routes/api.php';
 
 try {
-<<<<<<< HEAD
-    $db = getDatabaseConnection();
-
-    $userModel = new User($db);
-    $auth      = new AuthController($userModel);
-    $users     = new UserController($userModel);
-    $eventModel = new Event($db);
-    $event     = new EventController($eventModel);
-    $booking   = new BookingController(new Booking($db), $eventModel);
-    $contact   = new ContactMessageController(new ContactMessage($db));
-
-    // Parse URL path
-    $path        = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-=======
     // Connect DB
     $db = getDatabaseConnection();
 
@@ -174,23 +157,21 @@ try {
     $users = new UserController($userModel);
     $eventModel = new Event($db);
     $event = new EventController($eventModel);
-    $booking = new BookingController(new Booking($db), $eventModel);
+    $bookingModel = new Booking($db);
+    $booking = new BookingController($bookingModel, $eventModel);
     $contact = new ContactMessageController(new ContactMessage($db));
+    $recommendation = new RecommendationController($bookingModel, $eventModel);
 
     // Get URL path
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
     $apiPosition = strpos($path, '/api');
 
     if ($apiPosition !== false) {
         $path = substr($path, $apiPosition);
     }
 
-<<<<<<< HEAD
-=======
     // Handle request
->>>>>>> d2592c2 (UI: Added frontend OTP verification interface and email OTP flow)
-    handleApiRequest($_SERVER['REQUEST_METHOD'], $path, $auth, $users, $event, $booking, $contact);
+    handleApiRequest($_SERVER['REQUEST_METHOD'], $path, $auth, $users, $event, $booking, $contact, $recommendation);
 
 } catch (Exception $e) {
     jsonResponse(['message' => 'Server error', 'error' => $e->getMessage()], 500);
