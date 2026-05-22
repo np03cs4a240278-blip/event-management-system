@@ -1,0 +1,33 @@
+/* eventcard.css — Event card component styles (legacy, kept for compatibility) */
+
+.event-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(165, 180, 252, 0.12);
+  border: 1px solid #EDE9FE;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.event-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(165, 180, 252, 0.22);
+}
+
+.event-card button {
+  background: linear-gradient(135deg, #A5B4FC, #818CF8);
+  border: none;
+  padding: 9px 14px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.event-card button:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}

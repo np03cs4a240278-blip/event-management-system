@@ -1,0 +1,80 @@
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { ContactProvider } from "./context/ContactContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+// Public pages
+import Home           from "./pages/Home";
+import Login          from "./pages/Login";
+import Signup         from "./pages/Signup";
+import Register       from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyOtp      from "./pages/VerifyOtp";
+import FeedbackForm   from "./components/FeedbackForm";
+
+// User pages
+import UserDashboard from "./pages/UserDashboard";
+import BookVenue     from "./pages/BookVenue";
+import UserBookings  from "./pages/user/Bookings";
+import Events        from "./pages/user/Events";
+
+// Admin pages
+import AdminDashboard  from "./pages/admin/AdminDashboard";
+import AdminBookings   from "./pages/admin/Bookings";
+import ManageEvents    from "./pages/admin/ManageEvents";
+import ManageUsers     from "./pages/admin/ManageUsers";
+import ContactMessages from "./pages/admin/ContactMessages";
+
+// Shared
+import Profile from "./pages/Profile";
+
+function App() {
+  return (
+    <AuthProvider>
+      {/* ContactProvider must be inside AuthProvider so it can read user role */}
+      <ContactProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* ── Public routes ── */}
+            <Route path="/"               element={<Home />} />
+            <Route path="/login"          element={<Login />} />
+            <Route path="/signup"         element={<Signup />} />
+            <Route path="/register"       element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verify-otp"     element={<VerifyOtp />} />
+            <Route path="/feedback"       element={<FeedbackForm eventName="Tech Summit 2026" />} />
+
+            {/* ── User routes ── */}
+            <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
+              <Route path="/dashboard"      element={<Navigate replace to="/user-dashboard" />} />
+              <Route path="/user-dashboard" element={<UserDashboard />} />
+              <Route path="/book-venue"     element={<BookVenue />} />
+              <Route path="/events"         element={<Events />} />
+              <Route path="/bookings"       element={<UserBookings />} />
+            </Route>
+
+            {/* ── Admin routes ── */}
+            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/events"    element={<ManageEvents />} />
+              <Route path="/admin/bookings"  element={<AdminBookings />} />
+              <Route path="/admin/users"     element={<ManageUsers />} />
+              <Route path="/admin/messages"  element={<ContactMessages />} />
+            </Route>
+
+            {/* ── Shared protected routes ── */}
+            <Route element={<ProtectedRoute allowedRoles={["user", "admin"]} />}>
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+
+            {/* ── Fallback ── */}
+            <Route path="*" element={<Navigate replace to="/" />} />
+          </Routes>
+        </BrowserRouter>
+      </ContactProvider>
+    </AuthProvider>
+  );
+}
+
+export default App;

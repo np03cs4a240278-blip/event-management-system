@@ -1,0 +1,199 @@
+<?php
+
+function loadDotEnv(array $searchPaths): void
+{
+    foreach ($searchPaths as $path) {
+        if (!is_readable($path) || !is_file($path)) {
+            continue;
+        }
+
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || $line[0] === '#') {
+                continue;
+            }
+
+            if (strpos($line, '=') === false) {
+                continue;
+            }
+
+            [$key, $value] = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
+
+            if ($key === '') {
+                continue;
+            }
+
+            if (preg_match('/^(["\'])(.*)\1$/', $value, $matches)) {
+                $value = $matches[2];
+            }
+
+            $value = str_replace('\\n', "\n", $value);
+
+            if (getenv($key) !== false || isset($_ENV[$key])) {
+                continue;
+            }
+
+            putenv("{$key}={$value}");
+            $_ENV[$key] = $value;
+            $_SERVER[$key] = $value;
+        }
+    }
+}
+
+loadDotEnv([
+    dirname(__DIR__) . '/.env',
+    __DIR__ . '/.env',
+]);
+
+function getAllowedOrigins()
+{
+    $rawOrigins = getenv('ALLOWED_ORIGINS') ?: '';
+
+    if ($rawOrigins === '') {
+        return [];
+    }
+
+    return array_values(array_filter(array_map('trim', explode(',', $rawOrigins))));
+}
+
+function isPrivateOrLoopbackAddress(string $host): bool
+{
+    // Check for loopback addresses
+    if (in_array($host, ['localhost', '127.0.0.1', '::1'], true)) {
+        return true;
+    }
+
+    // Check for private IPv4 ranges: 10.x.x.x, 172.16-31.x.x, 192.168.x.x
+    if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        $long = ip2long($host);
+        return (
+            ($long >= ip2long('10.0.0.0')     && $long <= ip2long('10.255.255.255'))   ||
+            ($long >= ip2long('172.16.0.0')   && $long <= ip2long('172.31.255.255'))   ||
+            ($long >= ip2long('192.168.0.0')  && $long <= ip2long('192.168.255.255'))  ||
+            ($long >= ip2long('127.0.0.0')    && $long <= ip2long('127.255.255.255'))
+        );
+    }
+
+    return false;
+}
+
+function isAllowedFrontendOrigin($origin)
+{
+    if ($origin === '') {
+        return false;
+    }
+
+    if (in_array($origin, getAllowedOrigins(), true)) {
+        return true;
+    }
+
+    $parts = parse_url($origin);
+
+    if (!$parts || empty($parts['scheme']) || empty($parts['host'])) {
+        return false;
+    }
+
+    if (!in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
+        return false;
+    }
+
+    $host = strtolower($parts['host']);
+
+    if (in_array($host, ['localhost', '127.0.0.1', '::1'], true)) {
+        return true;
+    }
+
+    if (substr($host, -6) === '.local') {
+        return true;
+    }
+
+    if (isPrivateOrLoopbackAddress($host)) {
+        return true;
+    }
+
+    $serverHostHeader = $_SERVER['HTTP_HOST'] ?? '';
+    $serverHost = strtolower(explode(':', $serverHostHeader)[0] ?? '');
+
+    return $serverHost !== '' && $host === $serverHost;
+}
+
+$sessionLifetime = (int)(getenv('SESSION_LIFETIME') ?: 86400);
+$isSecureRequest = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+
+session_set_cookie_params([
+    'lifetime' => $sessionLifetime,
+    'path' => '/',
+    'domain' => '',
+    'secure' => $isSecureRequest,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+
+session_start();
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (isAllowedFrontendOrigin($origin)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header('Vary: Origin');
+}
+
+header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
+// Load files
+require 'helpers/response.php';
+require 'helpers/mailer.php';
+require 'config/db.php';
+require 'middleware/auth.php';
+require 'models/User.php';
+require 'models/Event.php';
+require 'models/Booking.php';
+require 'models/ContactMessage.php';
+require 'controllers/AuthController.php';
+require 'controllers/UserController.php';
+require 'controllers/EventController.php';
+require 'controllers/BookingController.php';
+require 'controllers/ContactMessageController.php';
+require 'controllers/RecommendationController.php';
+require 'routes/api.php';
+
+try {
+    // Connect DB
+    $db = getDatabaseConnection();
+
+    // Create objects
+    $userModel = new User($db);
+    $auth = new AuthController($userModel);
+    $users = new UserController($userModel);
+    $eventModel = new Event($db);
+    $event = new EventController($eventModel);
+    $bookingModel = new Booking($db);
+    $booking = new BookingController($bookingModel, $eventModel);
+    $contact = new ContactMessageController(new ContactMessage($db));
+    $recommendation = new RecommendationController($bookingModel, $eventModel);
+
+    // Get URL path
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $apiPosition = strpos($path, '/api');
+
+    if ($apiPosition !== false) {
+        $path = substr($path, $apiPosition);
+    }
+
+    // Handle request
+    handleApiRequest($_SERVER['REQUEST_METHOD'], $path, $auth, $users, $event, $booking, $contact, $recommendation);
+
+} catch (Exception $e) {
+    jsonResponse(['message' => 'Server error', 'error' => $e->getMessage()], 500);
+}

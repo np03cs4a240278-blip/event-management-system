@@ -1,0 +1,86 @@
+/* ============================================================
+   theme-tokens.css — Single source of truth for design tokens
+   Used across ALL pages for a unified look and feel.
+   ============================================================ */
+
+:root {
+  /* ── Brand Colors ── */
+  --color-primary:        #A5B4FC;   /* Soft indigo */
+  --color-primary-dark:   #818CF8;   /* Deeper indigo */
+  --color-primary-darker: #6366F1;   /* Active/hover */
+  --color-secondary:      #FBCFE8;   /* Soft pink */
+  --color-accent:         #4F46E5;   /* CTA indigo */
+
+  /* ── Backgrounds ── */
+  --color-bg:             #F8F9FD;
+  --color-surface:        #FFFFFF;
+  --color-surface-soft:   #F5F3FF;
+  --color-surface-hover:  #EEF2FF;
+
+  /* ── Text ── */
+  --color-text:           #1E1B4B;
+  --color-text-muted:     #6B7280;
+  --color-text-light:     #9CA3AF;
+
+  /* ── Borders ── */
+  --color-border:         #E5E7EB;
+  --color-border-focus:   #A5B4FC;
+
+  /* ── Status ── */
+  --color-success:        #065F46;
+  --color-success-bg:     #D1FAE5;
+  --color-success-border: #A7F3D0;
+  --color-error:          #B91C1C;
+  --color-error-bg:       #FEE2E2;
+  --color-error-border:   #FECACA;
+  --color-warning:        #92400E;
+  --color-warning-bg:     #FEF3C7;
+  --color-warning-border: #FDE68A;
+  --color-info:           #5B21B6;
+  --color-info-bg:        #EDE9FE;
+  --color-info-border:    #DDD6FE;
+
+  /* ── Shadows ── */
+  --shadow-sm:   0 2px 8px rgba(165, 180, 252, 0.12);
+  --shadow-md:   0 4px 20px rgba(165, 180, 252, 0.18);
+  --shadow-lg:   0 8px 40px rgba(165, 180, 252, 0.22);
+  --shadow-card: 0 2px 12px rgba(165, 180, 252, 0.15);
+
+  /* ── Radius ── */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   20px;
+  --radius-full: 999px;
+
+  /* ── Spacing ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* ── Typography ── */
+  --font-family: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-size-xs:  11px;
+  --font-size-sm:  13px;
+  --font-size-md:  14px;
+  --font-size-lg:  16px;
+  --font-size-xl:  18px;
+  --font-size-2xl: 22px;
+  --font-size-3xl: 28px;
+
+  /* ── Transitions ── */
+  --transition-fast:   0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow:   0.3s ease;
+
+  /* ── Gradients ── */
+  --gradient-brand:   linear-gradient(135deg, #FBCFE8, #A5B4FC);
+  --gradient-primary: linear-gradient(135deg, #A5B4FC, #818CF8);
+  --gradient-cta:     linear-gradient(135deg, #6366F1, #4F46E5);
+  --gradient-success: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+  --gradient-danger:  linear-gradient(135deg, #FCA5A5, #F87171);
+}
